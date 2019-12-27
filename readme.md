@@ -1,38 +1,11 @@
 IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建、销毁，解决【实例】过多且长时间占用的问题。
 
-## 设计思路
-
-### 1、注册
-
-可以向窗口中注册对象，指定 key + 创建器 + 空闲时间，可以注册和管理任何实现 IDisposable 接口对象
-
-### 2、获取对象
-
-开发人员使用 key 作为参数调用方法获得对象：
-
-- 存在时，直接返回
-- 不存在时，创建对象（保证线程安全）
-
-### 3、过期销毁
-
-当容器中有实例运行，会启用后台线程定时检查，超过空闲时间设置的将被释放（Dispose）
-
-## 使用场景
-
-- 多租户按数据库区分的场景，假设有1000个租户；
-- Redis 客户端需要操作 N 个 服务器；
-- Socket 长连接闲置后自动释放；
-
-## Quick start
+## 快速开始
 
 ```csharp
 //连续2次超过1分钟没有使用，就销毁【实例】
 static IdbleBus ib = new IdleBus(TimeSpan.FromMinutes(1), 2);
-ib.Notice += new EventHandler<NoticeEventArgs>((_, e) =>
-{
-    var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}";
-    Console.WriteLine(log);
-});
+ib.Notice += (_, e) => Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}");
 
 ib.Register("key1", () => new ManualResetEvent(false));
 ib.Register("key2", () => new AutoResetEvent(false));
@@ -72,4 +45,27 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 | int Quantity | 注册数量 |
 | event Notice | 容器内部的变化通知，如：自动释放、自动创建 |
 
+## 设计思路
+
 注意：IdleBus 和对象池不同，对象池是队列设计，我们是 KV 设计。
+
+### 1、注册
+
+可以向窗口中注册对象，指定 key + 创建器 + 空闲时间，可以注册和管理任何实现 IDisposable 接口对象
+
+### 2、获取对象
+
+开发人员使用 key 作为参数调用方法获得对象：
+
+- 存在时，直接返回
+- 不存在时，创建对象（保证线程安全）
+
+### 3、过期销毁
+
+当容器中有实例运行，会启用后台线程定时检查，超过空闲时间设置的将被释放（Dispose）
+
+## 使用场景
+
+- 多租户按数据库区分的场景，假设有1000个租户；
+- Redis 客户端需要操作 N 个 服务器；
+- Socket 长连接闲置后自动释放；
