@@ -147,7 +147,7 @@ public class IdleBus<T> : IDisposable where T : class
     /// <param name="idleTimes">空闲次数</param>
     public IdleBus(TimeSpan idle, int idleTimes)
     {
-        if (typeof(T).IsAssignableFrom(typeof(IDisposable)) == false)
+        if (typeof(IDisposable).IsAssignableFrom(typeof(T)) == false)
             throw new Exception($"无法为 {typeof(T).FullName} 创建 IdleBus，它必须实现 IDisposable 接口");
 
         _dic = new ConcurrentDictionary<string, ItemInfo>();
