@@ -4,7 +4,7 @@ IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建
 
 ### 1、注册
 
-可以向窗口中注册对象，指定 key + 创建器 + 空闲时间，可以注册和管理任何实现 IDispose 接口对象
+可以向窗口中注册对象，指定 key + 创建器 + 空闲时间，可以注册和管理任何实现 IDisposable 接口对象
 
 ### 2、获取对象
 
@@ -56,13 +56,17 @@ ib.Dispose();
 
 ## API
 
+new IdleBus 可使用任何 IDisposable 实现类进行注入
+
+new IdleBus\<T\> 可自定义类型创建，如： new IdleBus\<IFreeSql\>()
+
 | Method | 说明 |
 | -- | -- |
 | void Ctor() | 创建空闲容器 |
 | void Ctor(TimeSpan idle, int idleTimes) | 指定空闲时间、空闲次数，创建空闲容器 |
-| IdleBus Register(string key, Func\<IDisposable\> create) | 注册（其类型必须实现 IDispose） |
+| IdleBus Register(string key, Func\<IDisposable\> create) | 注册（其类型必须实现 IDisposable） |
 | IdleBus Register(string key, Func\<IDisposable\> create, TimeSpan idle) | 注册，单独设置空间时间 |
-| IDispose Get(string key) | 获取【实例】（线程安全） |
+| IDisposable Get(string key) | 获取【实例】（线程安全） |
 | void Remove(string key) | 删除已注册的 |
 | int UsageQuantity | 已创建【实例】数量 |
 | int Quantity | 注册数量 |

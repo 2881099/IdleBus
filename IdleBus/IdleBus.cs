@@ -8,23 +8,38 @@ using System.Threading;
 /// <summary>
 /// 空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
 /// </summary>
-public class IdleBus : IDisposable
+public class IdleBus : IdleBus<IDisposable>
+{
+    /// <summary>
+    /// 按空闲时间1分钟，空闲2次，创建空闲容器
+    /// </summary>
+    public IdleBus() : base() { }
+    /// <summary>
+    /// 指定空闲时间、空闲次数，创建空闲容器
+    /// </summary>
+    /// <param name="idle">空闲时间</param>
+    /// <param name="idleTimes">空闲次数</param>
+    public IdleBus(TimeSpan idle, int idleTimes) : base(idle, idleTimes) { }
+}
+
+/// <summary>
+/// 空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
+/// </summary>
+public class IdleBus<T> : IDisposable where T : class
 {
     public static void Test()
     {
         //超过1分钟没有使用，连续检测2次都这样，就销毁【实例】
-        var ib = new IdleBus(TimeSpan.FromMinutes(1), 2);
-        ib.Notice += new EventHandler<NoticeEventArgs>((_, e) =>
+        var ib = new IdleBus<IDisposable>(TimeSpan.FromMinutes(1), 2);
+        ib.Notice += (_, e) =>
         {
             var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}";
             //Trace.WriteLine(log);
             Console.WriteLine(log);
-        });
+        };
 
         ib.Register("key1", () => new ManualResetEvent(false));
-
         ib.Register("key2", () => new AutoResetEvent(false));
-        //可能还要注册很多个
 
         var item = ib.Get("key2") as AutoResetEvent;
         //获得 key2 对象，创建
@@ -43,9 +58,9 @@ public class IdleBus : IDisposable
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public IDisposable Get(string key)
+    public T Get(string key)
     {
-        if (isdisposed) new Exception($"{key} 实例获取失败 ，{nameof(IdleBus)} 对象已释放");
+        if (isdisposed) new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
             var error = new Exception($"{key} 实例获取失败，因为没有注册");
@@ -67,10 +82,10 @@ public class IdleBus : IDisposable
                 while (isdisposed == false && _usageQuantity > 0 && DateTime.Now.Subtract(_maxActiveTime) < TimeSpan.FromMinutes(20))
                 {
                     //定时30秒检查，关闭不活跃的【实例】
-                    for (var a = 0; a < 30; a++)
+                    for (var a = 0; a < 15; a++)
                     {
                         if (isdisposed) return;
-                        Thread.CurrentThread.Join(TimeSpan.FromSeconds(1));
+                        Thread.CurrentThread.Join(TimeSpan.FromSeconds(2));
                         if (isdisposed) return;
                     }
                     TimerCleanCallback();
@@ -85,17 +100,17 @@ public class IdleBus : IDisposable
     DateTime _maxActiveTime;
 
     /// <summary>
-    /// 注册【实例】，其类型必须实现 IDispose 方法
+    /// 注册【实例】
     /// </summary>
     /// <param name="key"></param>
     /// <param name="create">实例创建方法</param>
     /// <returns></returns>
-    public IdleBus Register(string key, Func<IDisposable> create) => InternalRegister(key, create, null, null, true);
-    public IdleBus Register(string key, Func<IDisposable> create, TimeSpan idle) => InternalRegister(key, create, idle, null, true);
-    public IdleBus Register(string key, Func<IDisposable> create, TimeSpan idle, int idleTimes) => InternalRegister(key, create, idle, idleTimes, true);
-    public IdleBus TryRegister(string key, Func<IDisposable> create) => InternalRegister(key, create, null, null, false);
-    public IdleBus TryRegister(string key, Func<IDisposable> create, TimeSpan idle) => InternalRegister(key, create, idle, null, false);
-    public IdleBus TryRegister(string key, Func<IDisposable> create, TimeSpan idle, int idleTimes) => InternalRegister(key, create, idle, idleTimes, false);
+    public IdleBus<T> Register(string key, Func<T> create) => InternalRegister(key, create, null, null, true);
+    public IdleBus<T> Register(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, null, true);
+    public IdleBus<T> Register(string key, Func<T> create, TimeSpan idle, int idleTimes) => InternalRegister(key, create, idle, idleTimes, true);
+    public IdleBus<T> TryRegister(string key, Func<T> create) => InternalRegister(key, create, null, null, false);
+    public IdleBus<T> TryRegister(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, null, false);
+    public IdleBus<T> TryRegister(string key, Func<T> create, TimeSpan idle, int idleTimes) => InternalRegister(key, create, idle, idleTimes, false);
 
     public void Remove(string key) => InternalRemove(key, true);
     public void TryRemove(string key) => InternalRemove(key, false);
@@ -132,6 +147,9 @@ public class IdleBus : IDisposable
     /// <param name="idleTimes">空闲次数</param>
     public IdleBus(TimeSpan idle, int idleTimes)
     {
+        if (typeof(T).IsAssignableFrom(typeof(IDisposable)) == false)
+            throw new Exception($"无法为 {typeof(T).FullName} 创建 IdleBus，它必须实现 IDisposable 接口");
+
         _dic = new ConcurrentDictionary<string, ItemInfo>();
         _removePending = new ConcurrentDictionary<string, ItemInfo>();
         _usageQuantity = 0;
@@ -139,9 +157,9 @@ public class IdleBus : IDisposable
         _defaultIdleTimes = idleTimes;
     }
 
-    IdleBus InternalRegister(string key, Func<IDisposable> create, TimeSpan? idle, int? idleTimes, bool isThrow)
+    IdleBus<T> InternalRegister(string key, Func<T> create, TimeSpan? idle, int? idleTimes, bool isThrow)
     {
-        if (isdisposed) new Exception($"{key} 注册失败 ，{nameof(IdleBus)} 对象已释放");
+        if (isdisposed) new Exception($"{key} 注册失败 ，{nameof(IdleBus<T>)} 对象已释放");
         var error = new Exception($"{key} 注册失败，请勿重复注册");
         if (_dic.ContainsKey(key))
         {
@@ -169,7 +187,7 @@ public class IdleBus : IDisposable
     }
     void InternalRemove(string key, bool isThrow)
     {
-        if (isdisposed) new Exception($"{key} 删除失败 ，{nameof(IdleBus)} 对象已释放");
+        if (isdisposed) new Exception($"{key} 删除失败 ，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryRemove(key, out var item) == false)
         {
             var error = new Exception($"{key} 删除失败 ，因为没有注册");
@@ -249,9 +267,9 @@ public class IdleBus : IDisposable
 
     class ItemInfo : IDisposable
     {
-        internal IdleBus accessor;
+        internal IdleBus<T> accessor;
         internal string key;
-        internal Func<IDisposable> create;
+        internal Func<T> create;
         internal TimeSpan idle;
         internal int idleTimes;
         internal DateTime createTime;
@@ -260,10 +278,10 @@ public class IdleBus : IDisposable
         internal int idleCounter;
         internal int releaseErrorCounter;
 
-        internal IDisposable value { get; private set; }
+        internal T value { get; private set; }
         object valueLock = new object();
 
-        internal IDisposable GetOrCreate()
+        internal T GetOrCreate()
         {
             if (isdisposed == true) return null;
             if (value == null)
@@ -307,7 +325,7 @@ public class IdleBus : IDisposable
             {
                 if (value != null && lockInIf())
                 {
-                    value?.Dispose();
+                    (value as IDisposable)?.Dispose();
                     value = null;
                     Interlocked.Decrement(ref accessor._usageQuantity);
                     Interlocked.Exchange(ref activeCounter, 0);
