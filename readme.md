@@ -1,5 +1,9 @@
 IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建、销毁，解决【实例】过多且长时间占用的问题。
 
+有时候想做一个单例对象重复使用提升性能，但是定义多了，有的又可能一直空闲着占用资源。
+
+专门解决：又想重复利用，又想少占资源的场景。
+
 ## 快速开始
 
 ```csharp
@@ -37,9 +41,9 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 | -- | -- |
 | void Ctor() | 创建空闲容器 |
 | void Ctor(TimeSpan idle, int idleTimes) | 指定空闲时间、空闲次数，创建空闲容器 |
-| IdleBus Register(string key, Func\<IDisposable\> create) | 注册（其类型必须实现 IDisposable） |
-| IdleBus Register(string key, Func\<IDisposable\> create, TimeSpan idle) | 注册，单独设置空间时间 |
-| IDisposable Get(string key) | 获取【实例】（线程安全） |
+| IdleBus Register(string key, Func\<T\> create) | 注册（其类型必须实现 IDisposable） |
+| IdleBus Register(string key, Func\<T\> create, TimeSpan idle) | 注册，单独设置空间时间 |
+| T Get(string key) | 获取【实例】（线程安全） |
 | void Remove(string key) | 删除已注册的 |
 | int UsageQuantity | 已创建【实例】数量 |
 | int Quantity | 注册数量 |
