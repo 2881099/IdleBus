@@ -56,9 +56,9 @@ ib.Dispose();
 
 ## API
 
-new IdleBus 可使用任何 IDisposable 实现类进行注入
+new IdleBus 可使用任何 IDisposable 实现类【混合注入】
 
-new IdleBus\<T\> 可自定义类型创建，如： new IdleBus\<IFreeSql\>()
+new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>()
 
 | Method | 说明 |
 | -- | -- |
