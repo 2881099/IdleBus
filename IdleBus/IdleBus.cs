@@ -234,9 +234,22 @@ public class IdleBus<T> : IDisposable where T : class
             //持续未活跃的【实例】，让它去死
             try
             {
+                Stopwatch sw = null;
+                if (Notice != null)
+                {
+                    sw = new Stopwatch();
+                    sw.Start();
+                }
                 if (item.Release(() => DateTime.Now.Subtract(item.lastActiveTime) > item.idle && item.lastActiveTime >= item.createTime))
+                {
+                    if (Notice != null) sw.Stop();
                     //防止并发有其他线程创建，最后活动时间 > 创建时间
-                    Notice?.Invoke(this, new NoticeEventArgs(NoticeType.AutoRelease, item.key, null, $"{key} ---自动释放成功，{_usageQuantity}/{Quantity}"));
+                    Notice?.Invoke(this, new NoticeEventArgs(NoticeType.AutoRelease, item.key, null, $"{key} ---自动释放成功，耗时 {sw.ElapsedMilliseconds}ms，{_usageQuantity}/{Quantity}"));
+                }
+                else
+                {
+                    if (Notice != null) sw.Stop();
+                }
             }
             catch (Exception ex)
             {
@@ -287,6 +300,7 @@ public class IdleBus<T> : IDisposable where T : class
             if (value == null)
             {
                 var iscreate = false;
+                Stopwatch sw = null;
                 try
                 {
                     lock (valueLock)
@@ -294,7 +308,16 @@ public class IdleBus<T> : IDisposable where T : class
                         if (isdisposed == true) return null;
                         if (value == null)
                         {
+                            if (accessor.Notice != null)
+                            {
+                                sw = new Stopwatch();
+                                sw.Start();
+                            }
                             value = create();
+                            if (accessor.Notice != null)
+                            {
+                                sw.Stop();
+                            }
                             createTime = DateTime.Now;
                             Interlocked.Increment(ref accessor._usageQuantity);
                             iscreate = true;
@@ -305,7 +328,7 @@ public class IdleBus<T> : IDisposable where T : class
                         }
                     }
                     if (iscreate)
-                        accessor.Notice?.Invoke(this, new NoticeEventArgs(NoticeType.AutoCreate, key, null, $"{key} 实例+++创建成功，{accessor._usageQuantity}/{accessor.Quantity}"));
+                        accessor.Notice?.Invoke(this, new NoticeEventArgs(NoticeType.AutoCreate, key, null, $"{key} 实例+++创建成功，耗时 {sw?.ElapsedMilliseconds}ms，{accessor._usageQuantity}/{accessor.Quantity}"));
                 }
                 catch (Exception ex)
                 {
