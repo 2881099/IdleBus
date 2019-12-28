@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IdleBus</name>
+    </assembly>
+    <members>
+        <member name="T:IdleBus">
+            <summary>
+            空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
+            </summary>
+        </member>
+        <member name="M:IdleBus.#ctor">
+            <summary>
+            按空闲时间1分钟，空闲2次，创建空闲容器
+            </summary>
+        </member>
+        <member name="M:IdleBus.#ctor(System.TimeSpan,System.Int32)">
+            <summary>
+            指定空闲时间、空闲次数，创建空闲容器
+            </summary>
+            <param name="idle">空闲时间</param>
+            <param name="idleTimes">空闲次数</param>
+        </member>
+        <member name="T:IdleBus`1">
+            <summary>
+            空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
+            </summary>
+        </member>
+        <member name="M:IdleBus`1.#ctor">
+            <summary>
+            按空闲时间1分钟，空闲2次，创建空闲容器
+            </summary>
+        </member>
+        <member name="M:IdleBus`1.#ctor(System.TimeSpan,System.Int32)">
+            <summary>
+            指定空闲时间、空闲次数，创建空闲容器
+            </summary>
+            <param name="idle">空闲时间</param>
+            <param name="idleTimes">空闲次数</param>
+        </member>
+        <member name="M:IdleBus`1.Get(System.String)">
+            <summary>
+            根据 key 获得或创建【实例】（线程安全）
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleBus`1.Register(System.String,System.Func{`0})">
+            <summary>
+            注册【实例】
+            </summary>
+            <param name="key"></param>
+            <param name="create">实例创建方法</param>
+            <returns></returns>
+        </member>
+        <member name="P:IdleBus`1.UsageQuantity">
+            <summary>
+            已创建【实例】数量
+            </summary>
+        </member>
+        <member name="P:IdleBus`1.Quantity">
+            <summary>
+            注册数量
+            </summary>
+        </member>
+        <member name="E:IdleBus`1.Notice">
+            <summary>
+            通知事件
+            </summary>
+        </member>
+        <member name="F:IdleBus`1.NoticeType.Register">
+            <summary>
+            执行 Register 方法的时候
+            </summary>
+        </member>
+        <member name="F:IdleBus`1.NoticeType.Remove">
+            <summary>
+            执行 Remove 方法的时候，注意：实际会延时释放【实例】
+            </summary>
+        </member>
+        <member name="F:IdleBus`1.NoticeType.AutoCreate">
+            <summary>
+            自动创建【实例】的时候
+            </summary>
+        </member>
+        <member name="F:IdleBus`1.NoticeType.AutoRelease">
+            <summary>
+            自动释放不活跃【实例】的时候
+            </summary>
+        </member>
+        <member name="F:IdleBus`1.NoticeType.Get">
+            <summary>
+            获取【实例】的时候
+            </summary>
+        </member>
+    </members>
+</doc>
