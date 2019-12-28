@@ -51,7 +51,9 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 
 ## 设计思路
 
-注意：IdleBus 和对象池不同，对象池是队列设计，我们是 KV 设计。
+IdleBus 和对象池不同，对象池是队列设计，我们是 KV 设计。
+
+IdleBus 又像缓存，又像池，又像容器，无法具体描述。
 
 ### 1、注册
 
@@ -73,3 +75,5 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 - 多租户按数据库区分的场景，假设有1000个租户；
 - Redis 客户端需要操作 N 个 服务器；
 - Socket 长连接闲置后自动释放；
+- 管理 1000个 rabbitmq 服务器的客户端；
+- 等等等。。。
