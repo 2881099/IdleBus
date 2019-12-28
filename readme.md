@@ -7,8 +7,8 @@ IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建
 ## 快速开始
 
 ```csharp
-//连续2次超过1分钟没有使用，就销毁【实例】
-static IdbleBus ib = new IdleBus(TimeSpan.FromMinutes(1), 2);
+//超过1分钟没有使用，就销毁【实例】
+static IdbleBus ib = new IdleBus(TimeSpan.FromMinutes(1));
 ib.Notice += (_, e) => Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}");
 
 ib.Register("key1", () => new ManualResetEvent(false));
@@ -40,7 +40,7 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 | Method | 说明 |
 | -- | -- |
 | void Ctor() | 创建空闲容器 |
-| void Ctor(TimeSpan idle, int idleTimes) | 指定空闲时间、空闲次数，创建空闲容器 |
+| void Ctor(TimeSpan idle) | 指定空闲时间，创建空闲容器 |
 | IdleBus Register(string key, Func\<T\> create) | 注册（其类型必须实现 IDisposable） |
 | IdleBus Register(string key, Func\<T\> create, TimeSpan idle) | 注册，单独设置空间时间 |
 | T Get(string key) | 获取【实例】（线程安全） |

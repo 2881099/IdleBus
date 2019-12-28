@@ -14,12 +14,11 @@
             按空闲时间1分钟，空闲2次，创建空闲容器
             </summary>
         </member>
-        <member name="M:IdleBus.#ctor(System.TimeSpan,System.Int32)">
+        <member name="M:IdleBus.#ctor(System.TimeSpan)">
             <summary>
             指定空闲时间、空闲次数，创建空闲容器
             </summary>
             <param name="idle">空闲时间</param>
-            <param name="idleTimes">空闲次数</param>
         </member>
         <member name="T:IdleBus`1">
             <summary>
@@ -31,12 +30,11 @@
             按空闲时间1分钟，空闲2次，创建空闲容器
             </summary>
         </member>
-        <member name="M:IdleBus`1.#ctor(System.TimeSpan,System.Int32)">
+        <member name="M:IdleBus`1.#ctor(System.TimeSpan)">
             <summary>
             指定空闲时间、空闲次数，创建空闲容器
             </summary>
             <param name="idle">空闲时间</param>
-            <param name="idleTimes">空闲次数</param>
         </member>
         <member name="M:IdleBus`1.Get(System.String)">
             <summary>

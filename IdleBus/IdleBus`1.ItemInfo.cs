@@ -14,8 +14,8 @@ partial class IdleBus<T>
         internal string key;
         internal Func<T> create;
         internal TimeSpan idle;
-        internal int idleTimes;
         internal DateTime createTime;
+        internal long timeout;
         internal DateTime lastActiveTime;
         internal long activeCounter;
         internal int idleCounter;
@@ -69,7 +69,7 @@ partial class IdleBus<T>
             {
                 if (value != null && lockInIf())
                 {
-                    (value as IDisposable)?.Dispose();
+                    value?.Dispose();
                     value = null;
                     Interlocked.Decrement(ref ib._usageQuantity);
                     Interlocked.Exchange(ref activeCounter, 0);

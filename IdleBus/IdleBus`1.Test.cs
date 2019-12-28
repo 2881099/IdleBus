@@ -11,7 +11,7 @@ partial class IdleBus<T>
     public static void Test()
     {
         //超过1分钟没有使用，连续检测2次都这样，就销毁【实例】
-        var ib = new IdleBus<IDisposable>(TimeSpan.FromMinutes(1), 2);
+        var ib = new IdleBus<IDisposable>(TimeSpan.FromMinutes(1));
         ib.Notice += (_, e) =>
         {
             var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}";

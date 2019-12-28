@@ -18,6 +18,5 @@ public class IdleBus : IdleBus<IDisposable>
     /// 指定空闲时间、空闲次数，创建空闲容器
     /// </summary>
     /// <param name="idle">空闲时间</param>
-    /// <param name="idleTimes">空闲次数</param>
-    public IdleBus(TimeSpan idle, int idleTimes) : base(idle, idleTimes) { }
+    public IdleBus(TimeSpan idle) : base(idle) { }
 }
