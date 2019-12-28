@@ -77,3 +77,20 @@ IdleBus 又像缓存，又像池，又像容器，无法具体描述。
 - Socket 长连接闲置后自动释放；
 - 管理 1000个 rabbitmq 服务器的客户端；
 - 等等等。。。
+
+举例：向 1000个 (不同的、不同的、不同的) rabbitmq 服务器发送消息，正常有两种做法：
+
+1、定义 1000 个静态 client 一直 open 着，重复利用
+
+缺点：1000个里面不是每个都活跃，然后也一直占用着资源
+
+2、每次发送消息的时候 open，使用完再 close
+
+```csharp
+new client("mq_0001server").pub(...).close();
+new client("mq_0002server").pub(...).close();
+new client("mq_0003server").pub(...).close();
+new client("mq_0004server").pub(...).close();
+```
+
+缺点：性能损耗会比较大，socket 没有有效的重复利用
