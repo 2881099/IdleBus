@@ -46,6 +46,7 @@ partial class IdleBus<T>
             long keysIndex = 0;
             foreach (var key in keys)
             {
+                if (isdisposed) return;
                 if (++keysIndex % 512 == 0 && ThreadJoin(1) == false) return;
 
                 if (_dic.TryGetValue(key, out var item) == false) continue;
