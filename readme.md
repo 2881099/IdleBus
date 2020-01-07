@@ -7,28 +7,68 @@ IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建
 ## 快速开始
 
 ```csharp
-//超过1分钟没有使用，就销毁【实例】
-static IdbleBus ib = new IdleBus(TimeSpan.FromMinutes(1));
-ib.Notice += (_, e) => Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}");
+class Program
+{
+    static void Main(string[] args)
+    {
+        //超过20秒没有使用，就销毁【实例】
+        var ib = new IdleBus(TimeSpan.FromSeconds(20));
+        ib.Notice += (_, e) =>
+        {
+            Console.WriteLine("    " + e.Log);
 
-ib.Register("key1", () => new ManualResetEvent(false));
-ib.Register("key2", () => new AutoResetEvent(false));
+            if (e.NoticeType == IdleBus<IDisposable>.NoticeType.AutoRelease)
+                Console.WriteLine($"    [{DateTime.Now.ToString("g")}] {e.Key} 空闲被回收");
+        };
 
-var item = ib.Get("key2") as AutoResetEvent;
-item = ib.Get("key2") as AutoResetEvent;
+        while (true)
+        {
+            Console.WriteLine("输入 > ");
+            var line = Console.ReadLine().Trim();
+            if (string.IsNullOrEmpty(line)) break;
 
-ib.Dispose();
+            // 注册
+            ib.TryRegister(line, () => new TestInfo());
+
+            // 保活
+            TestInfo item = ib.Get(line) as TestInfo;
+        }
+
+        ib.Dispose();
+    }
+
+    class TestInfo : IDisposable
+    {
+        public void Dispose() { }
+    }
+}
 ```
 
 输出：
 
 ```shell
-[00:42:21] 线程1：key1 注册成功，0/1
-[00:42:21] 线程1：key2 注册成功，0/2
-[00:42:21] 线程1：key2 实例+++创建成功，耗时 0ms，1/2
-[00:42:21] 线程1：key2 实例获取成功 1次
-[00:42:21] 线程1：key2 实例获取成功 2次
-线程 0x7f64 已退出，返回值为 0 (0x0)。
+输入 >
+a11
+    a11 注册成功，0/1
+    a11 实例+++创建成功，耗时 0.1557ms，1/1
+    a11 实例获取成功 1次
+输入 >
+a22
+    a22 注册成功，1/2
+    a22 实例+++创建成功，耗时 0.0081ms，2/2
+    a22 实例获取成功 1次
+输入 >
+a33
+    a33 注册成功，2/3
+    a33 实例+++创建成功，耗时 0.0073ms，3/3
+    a33 实例获取成功 1次
+输入 >
+    a11 ---自动释放成功，耗时 0.6743ms，2/3
+    [2020/1/7 14:04] a11 空闲被回收
+    a22 ---自动释放成功，耗时 0.249ms，1/3
+    [2020/1/7 14:04] a22 空闲被回收
+    a33 ---自动释放成功，耗时 0.0046ms，0/3
+    [2020/1/7 14:04] a33 空闲被回收
 ```
 
 ## API
