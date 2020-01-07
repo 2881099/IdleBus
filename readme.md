@@ -6,6 +6,8 @@ IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建
 
 ## 快速开始
 
+> dotnet add package IdleBus
+
 ```csharp
 class Program
 {
