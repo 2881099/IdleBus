@@ -11,9 +11,13 @@ namespace TestCore31
             var ib = new IdleBus(TimeSpan.FromSeconds(10));
             ib.Notice += (_, e2) =>
             {
-                var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e2.Log}";
-                //Trace.WriteLine(log);
-                Console.WriteLine(log);
+                if (e2.NoticeType == IdleBus<IDisposable>.NoticeType.AutoCreate ||
+                    e2.NoticeType == IdleBus<IDisposable>.NoticeType.AutoRelease)
+                {
+                    var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e2.Log}";
+                    //Trace.WriteLine(log);
+                    Console.WriteLine(log);
+                }
             };
 
             ib
