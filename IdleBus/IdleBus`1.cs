@@ -18,12 +18,12 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     TimeSpan _defaultIdle;
 
     /// <summary>
-    /// 按空闲时间1分钟，空闲2次，创建空闲容器
+    /// 按空闲时间1分钟，创建空闲容器
     /// </summary>
     public IdleBus() : this(TimeSpan.FromMinutes(1)) {}
 
     /// <summary>
-    /// 指定空闲时间、空闲次数，创建空闲容器
+    /// 指定空闲时间、创建空闲容器
     /// </summary>
     /// <param name="idle">空闲时间</param>
     public IdleBus(TimeSpan idle)
