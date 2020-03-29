@@ -8,43 +8,66 @@ namespace ConsoleApp1
     {
         class WangTask : IDisposable
         {
-            public string Name { get; private set; }
-            public WangTask(string name)
+            static Lazy<IdleBus> _ibLazy = new Lazy<IdleBus>(() =>
             {
-                this.Name = name;
+                var ib = new IdleBus();
+                ib.Notice += new EventHandler<IdleBus<IDisposable>.NoticeEventArgs>((s, e) =>
+                {
+                });
+                return ib;
+            });
+            static IdleBus Ib => _ibLazy.Value;
+
+            public string Key { get; private set; }
+            public TimeSpan Timeout { get; private set; }
+            public Action Handle { get; private set; }
+
+            private WangTask() { } //不允许 new WangTask()
+
+            public static void Register(string key, TimeSpan timeout, Action handle)
+            {
+                var task = new WangTask
+                {
+                    Key = key,
+                    Timeout = timeout,
+                    Handle = handle
+                };
+                Ib.Register(key, () => task, timeout);
+                Ib.Get(key);
+            }
+            public static void Remove(string key)
+            {
+                Ib.TryRemove(key);
             }
 
             public void Dispose()
             {
                 //todo 到期执行
+                Ib.TryRemove(this.Key);
 
-                Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {this.Name} 被执行");
+                try
+                {
+                    this.Handle?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Register(this.Key, this.Timeout, this.Handle); //出错了，重新放入调度
+                }
             }
         }
 
         static void Main(string[] args)
         {
-            var ib = new IdleBus(TimeSpan.FromSeconds(10));
-            ib.Notice += (_, e2) =>
-            {
-                if (e2.NoticeType == IdleBus<IDisposable>.NoticeType.AutoCreate ||
-                    e2.NoticeType == IdleBus<IDisposable>.NoticeType.AutoRelease)
-                {
-                    //var log = $"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e2.Log}";
-                    //Trace.WriteLine(log);
-                    //Console.WriteLine(log);
-                }
-            };
-
             Enumerable.Range(0, 10000).ToList().ForEach(idx =>
             {
                 var key = "wang_" + idx;
-                ib.TryRegister(key, () => new WangTask(key), TimeSpan.FromSeconds(30));
-                ib.Get(key);//开始计时
+                WangTask.Register(key, TimeSpan.FromSeconds(30), () =>
+                {
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {key} 被执行");
+                });
             });
 
             Console.ReadKey();
-            ib.Dispose();
         }
     }
 }

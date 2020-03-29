@@ -35,18 +35,32 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     }
 
     /// <summary>
-    /// 根据 key 获得或创建【实例】（线程安全）
+    /// 根据 key 获得或创建【实例】（线程安全）<para></para>
+    /// key 未注册时，抛出异常
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get(string key)
+    public T Get(string key) => InternalGet(key, true);
+    /// <summary>
+    /// 根据 key 获得或创建【实例】（线程安全）<para></para>
+    /// key 未注册时，返回 null
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public T TryGet(string key) => InternalGet(key, false);
+
+    T InternalGet(string key, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed && isThrow) throw new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
-            var error = new Exception($"{key} 实例获取失败，因为没有注册");
-            this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, error, error.Message));
-            throw error;
+            if (isThrow)
+            {
+                var error = new Exception($"{key} 实例获取失败，因为没有注册");
+                this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, error, error.Message));
+                throw error;
+            }
+            return null;
         }
 
         var now = DateTime.Now;

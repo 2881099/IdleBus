@@ -11,12 +11,12 @@
         </member>
         <member name="M:IdleBus.#ctor">
             <summary>
-            按空闲时间1分钟，空闲2次，创建空闲容器
+            按空闲时间1分钟，创建空闲容器
             </summary>
         </member>
         <member name="M:IdleBus.#ctor(System.TimeSpan)">
             <summary>
-            指定空闲时间、空闲次数，创建空闲容器
+            指定空闲时间、创建空闲容器
             </summary>
             <param name="idle">空闲时间</param>
         </member>
@@ -27,18 +27,27 @@
         </member>
         <member name="M:IdleBus`1.#ctor">
             <summary>
-            按空闲时间1分钟，空闲2次，创建空闲容器
+            按空闲时间1分钟，创建空闲容器
             </summary>
         </member>
         <member name="M:IdleBus`1.#ctor(System.TimeSpan)">
             <summary>
-            指定空闲时间、空闲次数，创建空闲容器
+            指定空闲时间、创建空闲容器
             </summary>
             <param name="idle">空闲时间</param>
         </member>
         <member name="M:IdleBus`1.Get(System.String)">
             <summary>
-            根据 key 获得或创建【实例】（线程安全）
+            根据 key 获得或创建【实例】（线程安全）<para></para>
+            key 未注册时，抛出异常
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleBus`1.TryGet(System.String)">
+            <summary>
+            根据 key 获得或创建【实例】（线程安全）<para></para>
+            key 未注册时，返回 null
             </summary>
             <param name="key"></param>
             <returns></returns>

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -42,7 +43,7 @@ partial class IdleBus<T>
             }
             couter = 0;
 
-            var keys = _dic.Keys;
+            var keys = _dic.Keys.ToArray();
             long keysIndex = 0;
             foreach (var key in keys)
             {

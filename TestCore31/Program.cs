@@ -20,9 +20,13 @@ namespace TestCore31
                 }
             };
 
+            var testkey1 = ib.TryGet("key1");
+
             ib
                 .Register("key1", () => new ManualResetEvent(false))
                 .Register("key2", () => new AutoResetEvent(false));
+
+            var testkey2 = ib.TryGet("key1");
 
             for (var a = 3; a < 2000; a++)
                 ib.Register("key" + a, () => new System.Data.SqlClient.SqlConnection());
