@@ -17,6 +17,7 @@ namespace ConsoleApp1
                 return ib;
             });
             static IdleBus Ib => _ibLazy.Value;
+            public static int Quantity => _ibLazy.Value.Quantity;
 
             public string Key { get; private set; }
             public TimeSpan Timeout { get; private set; }
@@ -58,14 +59,18 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
+            var xxx = WangTask.Quantity;
+            var dt = DateTime.Now;
             Enumerable.Range(0, 10000).ToList().ForEach(idx =>
             {
                 var key = "wang_" + idx;
                 WangTask.Register(key, TimeSpan.FromSeconds(30), () =>
                 {
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {key} 被执行");
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {key} 被执行，还剩 {WangTask.Quantity} 个任务");
                 });
             });
+            var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
+            Console.WriteLine($"注册耗时 {dtts}ms，共计 {WangTask.Quantity} 个任务");
 
             Console.ReadKey();
         }
