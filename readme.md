@@ -98,7 +98,7 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 | int Quantity | 注册数量 |
 | event Notice | 容器内部的变化通知，如：自动释放、自动创建 |
 
-> 注意：Register 参数 create 属于对象创建器，切莫直接返回外部创建好的对象，下面是错误的做法：
+> 注意：Register 参数 create 属于对象创建器，切莫直接返回外部创建好的对象
 
 ```csharp
 var obj = new Xxx();
