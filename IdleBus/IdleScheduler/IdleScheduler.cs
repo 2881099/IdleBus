@@ -136,7 +136,13 @@ public class IdleScheduler : IDisposable
 			try
 			{
 				if (_taskExecution != null)
-					_wq.Enqueue(() => _taskExecution(task));
+					_wq.Enqueue(() =>
+					{
+						_taskExecution(task);
+						if (times < maxTimes)
+							if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
+								_ib.Get(task.Id);
+					});
 			}
 			catch
 			{
@@ -145,9 +151,6 @@ public class IdleScheduler : IDisposable
 			finally
 			{
 				task.LastRunTime = DateTime.Now;
-				if (times < maxTimes)
-					if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
-						_ib.Get(task.Id);
 				_taskStorage.Update(task);
 			}
 		});
