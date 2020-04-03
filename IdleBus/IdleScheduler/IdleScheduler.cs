@@ -135,14 +135,13 @@ public class IdleScheduler : IDisposable
 
 			try
 			{
-				if (_taskExecution != null)
-					_wq.Enqueue(() =>
-					{
-						_taskExecution(task);
-						if (times < maxTimes)
-							if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
-								_ib.Get(task.Id);
-					});
+				_wq.Enqueue(() =>
+				{
+					_taskExecution?.Invoke(task);
+					if (times < maxTimes)
+						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
+							_ib.Get(task.Id);
+				});
 			}
 			catch
 			{
