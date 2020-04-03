@@ -27,8 +27,8 @@ namespace ConsoleApp1
 
             var dt = DateTime.Now;
 
-            for (var a = 0; a < 10000; a++)
-            {
+            //for (var a = 0; a < 10000; a++)
+            //{
                 //一次性延时任务
                 scheduler.AddTempTask(TimeSpan.FromSeconds(10), () =>
                 {
@@ -40,8 +40,8 @@ namespace ConsoleApp1
                 });
 
                 //重复性任务，执行10次，每次间隔1小时
-                scheduler.AddCycleTask(state: "data1", times: 10, seconds: 2);
-            }
+                scheduler.AddCycleTask(text: "data1", times: 10, seconds: 2);
+            //}
 
             var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
             Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 注册耗时 {dtts}ms，共计 {scheduler.Quantity} 个任务");

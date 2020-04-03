@@ -140,7 +140,7 @@
             <summary>
             添加重复执行的任务
             </summary>
-            <param name="state">任务数据</param>
+            <param name="text">任务数据</param>
             <param name="times">重复次数</param>
             <param name="seconds">秒数</param>
             <returns></returns>

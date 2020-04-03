@@ -83,33 +83,33 @@ public class IdleScheduler : IDisposable
 	/// <summary>
 	/// 添加重复执行的任务
 	/// </summary>
-	/// <param name="state">任务数据</param>
+	/// <param name="text">任务数据</param>
 	/// <param name="times">重复次数</param>
 	/// <param name="seconds">秒数</param>
 	/// <returns></returns>
-	public string AddCycleTask(string state, int times, int seconds) => AddCycleTaskPriv(state, times, Interval.SEC, string.Concat(seconds));
+	public string AddCycleTask(string text, int times, int seconds) => AddCycleTaskPriv(text, times, Interval.SEC, string.Concat(seconds));
 	/// <summary>
 	/// 添加重复执行的任务（每天的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnDay(string state, int times, int hour, int minute, int second) => AddCycleTaskPriv(state, times, Interval.RunOnDay, $"{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnDay(string text, int times, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnDay, $"{hour}:{minute}:{second}");
 	/// <summary>
 	/// 添加重复执行的任务（每个星期的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnWeek(string state, int times, int week, int hour, int minute, int second) => AddCycleTaskPriv(state, times, Interval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnWeek(string text, int times, int week, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
 	/// <summary>
 	/// 添加重复执行的任务（每个月的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnMonth(string state, int times, int day, int hour, int minute, int second) => AddCycleTaskPriv(state, times, Interval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnMonth(string text, int times, int day, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
 
-	string AddCycleTaskPriv(string state, int times, Interval interval, string intervalArgument)
+	string AddCycleTaskPriv(string text, int times, Interval interval, string intervalArgument)
 	{
 		var task = new CycleTaskinfo
 		{
 			Id = Guid.NewGuid().ToString(),
-			Text = state,
+			Text = text,
 			CreateTime = DateTime.Now,
 			MaxRunTimes = times,
 			Interval = interval,
