@@ -16,7 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWinformNet40", "TestWin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{5CE61D9B-C571-4B63-B729-EF2AAA51B9E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{80AB294A-90CA-4606-BC98-9B334D823BF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{80AB294A-90CA-4606-BC98-9B334D823BF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdleScheduler", "IdleScheduler\IdleScheduler.csproj", "{3BF4F6C3-CD28-4795-987F-36A1AAAFD399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{80AB294A-90CA-4606-BC98-9B334D823BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80AB294A-90CA-4606-BC98-9B334D823BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80AB294A-90CA-4606-BC98-9B334D823BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BF4F6C3-CD28-4795-987F-36A1AAAFD399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BF4F6C3-CD28-4795-987F-36A1AAAFD399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BF4F6C3-CD28-4795-987F-36A1AAAFD399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BF4F6C3-CD28-4795-987F-36A1AAAFD399}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

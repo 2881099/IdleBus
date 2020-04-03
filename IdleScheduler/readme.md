@@ -1,5 +1,4 @@
-IdleSchduler 是利用 IdleBus 实现的任务调度器。
-
+IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时的延时任务和重复循环任务，可按秒，每天固定时间，每周固定时间，每月固定时间执行。
 
 ## API
 
@@ -13,7 +12,7 @@ IdleSchduler 是利用 IdleBus 实现的任务调度器。
 
 ## 快速开始
 
-> dotnet add package IdleBus
+> dotnet add package IdleSchduler
 
 ```csharp
 class Program

@@ -5,24 +5,31 @@
     <Version>1.2.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>YeXiangQin</Authors>
-    <Description>IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建、销毁，解决【实例】过多且长时间占用的问题。</Description>
-    <PackageProjectUrl>https://github.com/2881099/IdleBus</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/2881099/IdleBus</RepositoryUrl>
+    <Description>IdleScheduler 轻量定时任务调度，支持临时的延时任务和重复循环任务，可按秒，每天固定时间，每周固定时间，每月固定时间执行。</Description>
+    <PackageProjectUrl>https://github.com/2881099/IdleBus/IdleScheduler</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/2881099/IdleBus/IdleScheduler</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>IdleBus;Idle</PackageTags>
+    <PackageTags>IdleScheduler;Scheduler;Timer;TempTask</PackageTags>
     <PackageId>$(AssemblyName)</PackageId>
     <Title>$(AssemblyName)</Title>
     <IsPackable>true</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>yxq.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DocumentationFile>IdleBus.xml</DocumentationFile>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WorkQueue" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IdleBus\IdleBus.csproj" />
+  </ItemGroup>
 
 </Project>
