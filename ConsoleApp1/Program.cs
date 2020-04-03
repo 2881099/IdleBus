@@ -1,78 +1,62 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using static IdleScheduler.Internal;
 
 namespace ConsoleApp1
 {
     class Program
     {
-        class WangTask : IDisposable
+
+        class TaskStorage : ICycleTaskStorage
         {
-            static Lazy<IdleBus> _ibLazy = new Lazy<IdleBus>(() =>
-            {
-                var ib = new IdleBus();
-                ib.Notice += new EventHandler<IdleBus<IDisposable>.NoticeEventArgs>((s, e) =>
-                {
-                });
-                return ib;
-            });
-            static IdleBus Ib => _ibLazy.Value;
-            public static int Quantity => _ibLazy.Value.Quantity;
-
-            public string Key { get; private set; }
-            public TimeSpan Timeout { get; private set; }
-            public Action Handle { get; private set; }
-
-            private WangTask() { } //不允许 new WangTask()
-
-            public static void Register(string key, TimeSpan timeout, Action handle)
-            {
-                var task = new WangTask
-                {
-                    Key = key,
-                    Timeout = timeout,
-                    Handle = handle
-                };
-                Ib.Register(key, () => task, timeout);
-                Ib.Get(key);
-            }
-            public static void Remove(string key)
-            {
-                Ib.TryRemove(key);
-            }
-
-            public void Dispose()
-            {
-                //todo 到期执行
-                Ib.TryRemove(this.Key);
-
-                try
-                {
-                    this.Handle?.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    Register(this.Key, this.Timeout, this.Handle); //出错了，重新放入调度
-                }
-            }
+            public List<CycleTaskinfo> LoadAll() => new List<CycleTaskinfo>();
+            public void Add(CycleTaskinfo task) { }
+            public void Remove(CycleTaskinfo task) { }
+            public void Update(CycleTaskinfo task) { }
         }
 
         static void Main(string[] args)
         {
-            var xxx = WangTask.Quantity;
-            var dt = DateTime.Now;
-            Enumerable.Range(0, 10000).ToList().ForEach(idx =>
+            IdleScheduler scheduler = null;
+            scheduler = new IdleScheduler(new TaskStorage(), task =>
             {
-                var key = "wang_" + idx;
-                WangTask.Register(key, TimeSpan.FromSeconds(30), () =>
-                {
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {key} 被执行，还剩 {WangTask.Quantity} 个任务");
-                });
+                Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {task.Text} 被执行，还剩 {scheduler.Quantity} 个任务");
             });
+
+            var dt = DateTime.Now;
+
+            for (var a = 0; a < 10000; a++)
+            {
+                //一次性延时任务
+                scheduler.AddTempTask(TimeSpan.FromSeconds(10), () =>
+                {
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 10秒后被执行，还剩 {scheduler.Quantity} 个任务");
+                });
+                scheduler.AddTempTask(TimeSpan.FromSeconds(20), () =>
+                {
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 20秒后被执行，还剩 {scheduler.Quantity} 个任务");
+                });
+
+                //重复性任务，执行10次，每次间隔1小时
+                scheduler.AddCycleTask(state: "data1", times: 10, seconds: 2);
+            }
+
             var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
-            Console.WriteLine($"注册耗时 {dtts}ms，共计 {WangTask.Quantity} 个任务");
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 注册耗时 {dtts}ms，共计 {scheduler.Quantity} 个任务");
 
             Console.ReadKey();
+
+            dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 耗时 {dtts}ms，还剩 {scheduler.Quantity} 个任务");
+            Console.ReadKey();
+
+            dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 耗时 {dtts}ms，还剩 {scheduler.Quantity} 个任务");
+            Console.ReadKey();
+
+            scheduler.Dispose();
         }
     }
 }

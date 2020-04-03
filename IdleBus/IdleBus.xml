@@ -100,5 +100,101 @@
             获取【实例】的时候
             </summary>
         </member>
+        <member name="P:IdleBus`1.TimeoutScanOptions.IntervalSeconds">
+            <summary>
+            扫描间隔秒数（默认值：2）
+            </summary>
+        </member>
+        <member name="P:IdleBus`1.TimeoutScanOptions.QuitWaitSeconds">
+            <summary>
+            扫描的线程空闲多少秒才退出（默认值：10秒）
+            </summary>
+        </member>
+        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantity">
+            <summary>
+            扫描的每批数量（默认值：512）<para></para>
+            可防止注册数量太多时导致 CPU 占用过高
+            </summary>
+        </member>
+        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantityWaitSeconds">
+            <summary>
+            达到扫描的每批数量时，线程等待的秒数（默认值：1）
+            </summary>
+        </member>
+        <member name="P:IdleBus`1.ScanOptions">
+            <summary>
+            扫描过期对象的设置<para></para>
+            机制：当窗口里有存活对象时，扫描线程才会开启（只开启一个线程）。<para></para>
+            连续多少秒都没存活的对象时，才退出扫描。
+            </summary>
+        </member>
+        <member name="M:IdleScheduler.AddTempTask(System.TimeSpan,System.Action)">
+            <summary>
+            一次性临时任务（程序重启会丢失）
+            </summary>
+            <param name="timeout"></param>
+            <param name="handle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.AddCycleTask(System.String,System.Int32,System.Int32)">
+            <summary>
+            添加重复执行的任务
+            </summary>
+            <param name="state">任务数据</param>
+            <param name="times">重复次数</param>
+            <param name="seconds">秒数</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.AddCycleTaskRunOnDay(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            添加重复执行的任务（每天的什么时候执行）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.AddCycleTaskRunOnWeek(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            添加重复执行的任务（每个星期的什么时候执行）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.AddCycleTaskRunOnMonth(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            添加重复执行的任务（每个月的什么时候执行）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.RemoveTask(System.String)">
+            <summary>
+            删除任务
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:IdleScheduler.Internal.Interval.SEC">
+            <summary>
+            按秒触发
+            </summary>
+        </member>
+        <member name="F:IdleScheduler.Internal.Interval.RunOnDay">
+            <summary>
+            每天 什么时间 触发<para></para>
+            如：15:55:59<para></para>
+            每天15点55分59秒
+            </summary>
+        </member>
+        <member name="F:IdleScheduler.Internal.Interval.RunOnWeek">
+            <summary>
+            每星期几 什么时间 触发<para></para>
+            如：2:15:55:59<para></para>
+            每星期二15点55分59秒
+            </summary>
+        </member>
+        <member name="F:IdleScheduler.Internal.Interval.RunOnMonth">
+            <summary>
+            每月第几天 什么时间 触发<para></para>
+            如：5:15:55:59<para></para>
+            每月第五天15点55分59秒
+            </summary>
+        </member>
     </members>
 </doc>

@@ -76,11 +76,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WorkQueue">
-      <Version>1.0.5</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\IdleBus\IdleBus.csproj">
       <Project>{ab044be0-8676-481f-a454-3ad68b8bbe54}</Project>
       <Name>IdleBus</Name>

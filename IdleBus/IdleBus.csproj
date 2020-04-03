@@ -25,4 +25,8 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WorkQueue" Version="1.1.0" />
+  </ItemGroup>
+
 </Project>

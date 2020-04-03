@@ -78,13 +78,21 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// <param name="key"></param>
     /// <param name="create">实例创建方法</param>
     /// <returns></returns>
-    public IdleBus<T> Register(string key, Func<T> create) => InternalRegister(key, create, null, true);
-    public IdleBus<T> Register(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, true);
-    public IdleBus<T> TryRegister(string key, Func<T> create) => InternalRegister(key, create, null, false);
-    public IdleBus<T> TryRegister(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
+    public IdleBus<T> Register(string key, Func<T> create)
+    {
+        InternalRegister(key, create, null, true);
+        return this;
+    }
+    public IdleBus<T> Register(string key, Func<T> create, TimeSpan idle)
+    {
+        InternalRegister(key, create, idle, true);
+        return this;
+    }
+    public bool TryRegister(string key, Func<T> create) => InternalRegister(key, create, null, false);
+    public bool TryRegister(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
 
-    public void Remove(string key) => InternalRemove(key, true);
-    public void TryRemove(string key) => InternalRemove(key, false);
+    //public void Remove(string key) => InternalRemove(key, true);
+    public bool TryRemove(string key) => InternalRemove(key, false);
 
     /// <summary>
     /// 已创建【实例】数量
@@ -99,7 +107,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// </summary>
     public event EventHandler<NoticeEventArgs> Notice;
 
-    IdleBus<T> InternalRegister(string key, Func<T> create, TimeSpan? idle, bool isThrow)
+    bool InternalRegister(string key, Func<T> create, TimeSpan? idle, bool isThrow)
     {
         if (isdisposed) throw new Exception($"{key} 注册失败 ，{nameof(IdleBus<T>)} 对象已释放");
         var error = new Exception($"{key} 注册失败，请勿重复注册");
@@ -107,7 +115,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         {
             this.OnNotice(new NoticeEventArgs(NoticeType.Register, key, error, error.Message));
             if (isThrow) throw error;
-            return this;
+            return false;
         }
 
         if (idle == null) idle = _defaultIdle;
@@ -129,12 +137,12 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         {
             this.OnNotice(new NoticeEventArgs(NoticeType.Register, key, error, error.Message));
             if (isThrow) throw error;
-            return this;
+            return false;
         }
         this.OnNotice(new NoticeEventArgs(NoticeType.Register, key, null, $"{key} 注册成功，{_usageQuantity}/{Quantity}"));
-        return this;
+        return true;
     }
-    void InternalRemove(string key, bool isThrow)
+    bool InternalRemove(string key, bool isThrow)
     {
         if (isdisposed) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryRemove(key, out var item) == false)
@@ -142,7 +150,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
             var error = new Exception($"{key} 删除失败 ，因为没有注册");
             this.OnNotice(new NoticeEventArgs(NoticeType.Remove, key, error, error.Message));
             if (isThrow) throw error;
-            return;
+            return false;
         }
 
         Interlocked.Exchange(ref item.releaseErrorCounter, 0);
@@ -150,6 +158,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         if (item.value == null) item.lastActiveTime = DateTime.Now.Subtract(item.idle).AddSeconds(-60); //延时删除
         _removePending.TryAdd(Guid.NewGuid().ToString(), item);
         this.OnNotice(new NoticeEventArgs(NoticeType.Remove, item.key, null, $"{key} 删除成功，并且已标记为延时释放，{_usageQuantity}/{Quantity}"));
+        return true;
     }
     void InternalRemoveDelayHandler()
     {

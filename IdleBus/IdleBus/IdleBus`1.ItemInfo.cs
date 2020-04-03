@@ -15,7 +15,6 @@ partial class IdleBus<T>
         internal Func<T> create;
         internal TimeSpan idle;
         internal DateTime createTime;
-        internal long timeout;
         internal DateTime lastActiveTime;
         internal long activeCounter;
         internal int idleCounter;
