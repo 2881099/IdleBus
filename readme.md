@@ -90,10 +90,10 @@ new IdleBus\<T\> 可【自定义类型】注入，如： new IdleBus\<IFreeSql\>
 | IdleBus Register(string key, Func\<T\> create) | 注册（其类型必须实现 IDisposable） |
 | IdleBus Register(string key, Func\<T\> create, TimeSpan idle) | 注册，单独设置空间时间 |
 | T Get(string key) | 获取【实例】（线程安全），key 未注册时，抛出异常 |
-| T TryGet(string key) | 获取【实例】（线程安全），key 未注册时，返回 null |
+| bool Exists(string key) | 判断 key 是否已注册 |
 | void Remove(string key) | 删除已注册的 |
-| int UsageQuantity | 已创建【实例】数量 |
 | int Quantity | 注册数量 |
+| int UsageQuantity | 已创建【实例】数量 |
 | event Notice | 容器内部的变化通知，如：自动释放、自动创建 |
 
 > 注意：Register 参数 create 属于对象创建器，切莫直接返回外部创建好的对象
