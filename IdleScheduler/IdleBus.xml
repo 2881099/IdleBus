@@ -4,38 +4,49 @@
         <name>IdleScheduler</name>
     </assembly>
     <members>
+        <member name="P:IdleScheduler.QuantityTempTask">
+            <summary>
+            临时任务数量
+            </summary>
+        </member>
+        <member name="P:IdleScheduler.QuantityCycleTask">
+            <summary>
+            循环任务数量
+            </summary>
+        </member>
         <member name="M:IdleScheduler.AddTempTask(System.TimeSpan,System.Action)">
             <summary>
-            一次性临时任务（程序重启会丢失）
+            临时任务（程序重启会丢失）
             </summary>
             <param name="timeout"></param>
             <param name="handle"></param>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.AddCycleTask(System.String,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.AddCycleTask(System.String,System.String,System.Int32,System.Int32)">
             <summary>
-            添加重复执行的任务
+            添加循环执行的任务
             </summary>
-            <param name="text">任务数据</param>
-            <param name="times">重复次数</param>
+            <param name="topic">名称</param>
+            <param name="body">数据</param>
+            <param name="times">循环次数</param>
             <param name="seconds">秒数</param>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.AddCycleTaskRunOnDay(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.AddCycleTaskRunOnDay(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            添加重复执行的任务（每天的什么时候执行）
+            添加循环执行的任务（每天的什么时候执行）
             </summary>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.AddCycleTaskRunOnWeek(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.AddCycleTaskRunOnWeek(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            添加重复执行的任务（每个星期的什么时候执行）
+            添加循环执行的任务（每个星期的什么时候执行）
             </summary>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.AddCycleTaskRunOnMonth(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.AddCycleTaskRunOnMonth(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            添加重复执行的任务（每个月的什么时候执行）
+            添加循环执行的任务（每个月的什么时候执行）
             </summary>
             <returns></returns>
         </member>
@@ -45,6 +56,37 @@
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Internal.ICycleTask.LoadAll">
+            <summary>
+            加载正在运行中的任务
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Internal.ICycleTask.Add(IdleScheduler.Internal.CycleTaskinfo)">
+            <summary>
+            添加任务的时候触发
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:IdleScheduler.Internal.ICycleTask.Remove(IdleScheduler.Internal.CycleTaskinfo)">
+            <summary>
+            删除任务的时候触发
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:IdleScheduler.Internal.ICycleTask.Update(IdleScheduler.Internal.CycleTaskinfo)">
+            <summary>
+            更新任务的时候触发
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:IdleScheduler.Internal.ICycleTask.Execute(IdleScheduler,IdleScheduler.Internal.CycleTaskinfo)">
+            <summary>
+            任务执行的时候触发
+            </summary>
+            <param name="scheduler"></param>
+            <param name="task"></param>
         </member>
         <member name="F:IdleScheduler.Internal.Interval.SEC">
             <summary>

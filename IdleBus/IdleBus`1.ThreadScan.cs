@@ -77,7 +77,17 @@ partial class IdleBus<T>
             foreach (var key in keys)
             {
                 if (isdisposed) return;
-                if (++keysIndex % ScanOptions.BatchQuantity == 0 && ThreadJoin(ScanOptions.BatchQuantityWaitSeconds) == false) return;
+                if (++keysIndex % ScanOptions.BatchQuantity == 0)
+                {
+                    if (keys.Length > 10240) //任务数量太多的时候，延时1秒
+                    {
+                        if (ThreadJoin(1) == false) return;
+                    }
+                    else if (ScanOptions.BatchQuantityWaitSeconds > 0)
+                    {
+                        if (ThreadJoin(ScanOptions.BatchQuantityWaitSeconds) == false) return;
+                    }
+                }
 
                 if (_dic.TryGetValue(key, out var item) == false) continue;
                 if (item.value == null) continue;

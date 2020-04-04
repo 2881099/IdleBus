@@ -4,11 +4,12 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 | Method | 说明 |
 | -- | -- |
-| void Ctor(ICycleTaskStorage, Action<CycleTaskinfo>) | 指定任务调度器（单例） |
+| void Ctor(ICycleTask) | 指定任务调度器（单例） |
 | string AddTempTask(TimeSpan, Action) | 创建临时的延时任务，返回 id |
-| string AddCycleTask(string text, int times, int seconds) | 创建循环定时任务，返回 id |
-| bool RemoveTask(strin id) | 删除任务 |
-| int Quantity | 正在执行的任务数量 |
+| string AddCycleTask(string topic, string body, int times, int seconds) | 创建循环定时任务，返回 id |
+| bool RemoveTask(string id) | 删除任务 |
+| int QuantityTempTask | 临时任务数量 |
+| int QuantityCycleTask | 循环任务数量 |
 
 ## 快速开始
 

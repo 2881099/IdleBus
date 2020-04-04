@@ -8,12 +8,19 @@ using System.Threading;
 public class IdleScheduler : IDisposable
 {
 	IdleBus _ib;
-	int _quantity;
-	public int Quantity => _quantity;
-	
-	ICycleTaskStorage _taskStorage;
-	Action<CycleTaskinfo> _taskExecution;
-	WorkQueue _wq = new WorkQueue();
+	int _quantityTempTask;
+	int _quantityCycleTask;
+	/// <summary>
+	/// 临时任务数量
+	/// </summary>
+	public int QuantityTempTask => _quantityTempTask;
+	/// <summary>
+	/// 循环任务数量
+	/// </summary>
+	public int QuantityCycleTask => _quantityCycleTask;
+
+	ICycleTask _cycleTaskImpl;
+	WorkQueue _wq;
 	ConcurrentDictionary<string, CycleTaskinfo> _cycleTasks = new ConcurrentDictionary<string, CycleTaskinfo>();
 
 	#region Dispose
@@ -31,15 +38,16 @@ public class IdleScheduler : IDisposable
 		_ib?.Dispose();
 		_wq?.Dispose();
 		_cycleTasks?.Clear();
+		Interlocked.Exchange(ref _quantityTempTask, 0);
+		Interlocked.Exchange(ref _quantityCycleTask, 0);
+		(_cycleTaskImpl as IDisposable)?.Dispose();
 	}
 	#endregion
 
-	public IdleScheduler(ICycleTaskStorage taskStorage, Action<CycleTaskinfo> taskExecution)
+	public IdleScheduler(ICycleTask cycleTaskImpl)
 	{
-		if (taskExecution == null) throw new ArgumentNullException("taskExecution 参数不能为  null");
-		if (taskStorage == null) throw new ArgumentNullException("taskStorage 参数不能为  null");
-		_taskExecution = taskExecution;
-		_taskStorage = taskStorage;
+		if (cycleTaskImpl == null) throw new ArgumentNullException("cycleTaskImpl 参数不能为  null");
+		_cycleTaskImpl = cycleTaskImpl;
 
 		_ib = new IdleBus();
 		_ib.ScanOptions.IntervalSeconds = 1;
@@ -51,13 +59,13 @@ public class IdleScheduler : IDisposable
 		});
 		_wq = new WorkQueue(30);
 
-		var tasks = _taskStorage.LoadAll();
+		var tasks = _cycleTaskImpl.LoadAll();
 		foreach (var task in tasks)
-			AddCycleTaskPriv(task);
+			AddCycleTaskPriv(task, false);
 	}
 
 	/// <summary>
-	/// 一次性临时任务（程序重启会丢失）
+	/// 临时任务（程序重启会丢失）
 	/// </summary>
 	/// <param name="timeout"></param>
 	/// <param name="handle"></param>
@@ -68,59 +76,62 @@ public class IdleScheduler : IDisposable
 		var bus = new IdleTimeout(() =>
 		{
 			_ib.TryRemove(id);
-			Interlocked.Decrement(ref _quantity);
+			Interlocked.Decrement(ref _quantityTempTask);
 			if (handle != null)
 				_wq.Enqueue(handle);
 		});
 		if (_ib.TryRegister(id, () => bus, timeout))
 		{
 			_ib.Get(id);
-			Interlocked.Increment(ref _quantity);
+			Interlocked.Increment(ref _quantityTempTask);
 		}
 		return id;
 	}
-	
+
 	/// <summary>
-	/// 添加重复执行的任务
+	/// 添加循环执行的任务
 	/// </summary>
-	/// <param name="text">任务数据</param>
-	/// <param name="times">重复次数</param>
+	/// <param name="topic">名称</param>
+	/// <param name="body">数据</param>
+	/// <param name="times">循环次数</param>
 	/// <param name="seconds">秒数</param>
 	/// <returns></returns>
-	public string AddCycleTask(string text, int times, int seconds) => AddCycleTaskPriv(text, times, Interval.SEC, string.Concat(seconds));
+	public string AddCycleTask(string topic, string body, int times, int seconds) => AddCycleTaskPriv(topic, body, times, Interval.SEC, string.Concat(seconds));
 	/// <summary>
-	/// 添加重复执行的任务（每天的什么时候执行）
+	/// 添加循环执行的任务（每天的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnDay(string text, int times, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnDay, $"{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnDay(string topic, string body, int times, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, times, Interval.RunOnDay, $"{hour}:{minute}:{second}");
 	/// <summary>
-	/// 添加重复执行的任务（每个星期的什么时候执行）
+	/// 添加循环执行的任务（每个星期的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnWeek(string text, int times, int week, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnWeek(string topic, string body, int times, int week, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, times, Interval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
 	/// <summary>
-	/// 添加重复执行的任务（每个月的什么时候执行）
+	/// 添加循环执行的任务（每个月的什么时候执行）
 	/// </summary>
 	/// <returns></returns>
-	public string AddCycleTaskRunOnMonth(string text, int times, int day, int hour, int minute, int second) => AddCycleTaskPriv(text, times, Interval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
+	public string AddCycleTaskRunOnMonth(string topic, string body, int times, int day, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, times, Interval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
 
-	string AddCycleTaskPriv(string text, int times, Interval interval, string intervalArgument)
+	string AddCycleTaskPriv(string topic, string body, int times, Interval interval, string intervalArgument)
 	{
 		var task = new CycleTaskinfo
 		{
 			Id = Guid.NewGuid().ToString(),
-			Text = text,
+			Topic = topic,
+			Body = body,
 			CreateTime = DateTime.Now,
 			MaxRunTimes = times,
 			Interval = interval,
 			IntervalArgument = intervalArgument
 		};
-		AddCycleTaskPriv(task);
+		AddCycleTaskPriv(task, true);
 		return task.Id;
 	}
 	
-	void AddCycleTaskPriv(CycleTaskinfo task)
+	void AddCycleTaskPriv(CycleTaskinfo task, bool isSave)
 	{
+		if (task.RunTimes >= task.MaxRunTimes) return;
 		IdleTimeout bus = null;
 		bus = new IdleTimeout(() =>
 		{
@@ -130,14 +141,14 @@ public class IdleScheduler : IDisposable
 			if (times >= maxTimes)
 			{
 				if (_cycleTasks.TryRemove(task.Id, out var old))
-					Interlocked.Decrement(ref _quantity);
+					Interlocked.Decrement(ref _quantityCycleTask);
 			}
 
 			try
 			{
 				_wq.Enqueue(() =>
 				{
-					_taskExecution?.Invoke(task);
+					_cycleTaskImpl.Execute(this, task);
 					if (times < maxTimes)
 						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
 							_ib.Get(task.Id);
@@ -150,15 +161,26 @@ public class IdleScheduler : IDisposable
 			finally
 			{
 				task.LastRunTime = DateTime.Now;
-				_taskStorage.Update(task);
+				_cycleTaskImpl.Update(task);
 			}
 		});
 		if (_cycleTasks.TryAdd(task.Id, task))
 		{
-			Interlocked.Increment(ref _quantity);
+			if (isSave)
+			{
+				try
+				{
+					_cycleTaskImpl.Add(task);
+				}
+				catch
+				{
+					_cycleTasks.TryRemove(task.Id, out var old);
+					throw;
+				}
+			}
+			Interlocked.Increment(ref _quantityCycleTask);
 			if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
 				_ib.Get(task.Id);
-			_taskStorage.Add(task);
 		}
 	}
 
@@ -171,8 +193,8 @@ public class IdleScheduler : IDisposable
 	{
 		if (_cycleTasks.TryRemove(id, out var old))
 		{
-			Interlocked.Decrement(ref _quantity);
-			_taskStorage.Remove(old);
+			Interlocked.Decrement(ref _quantityCycleTask);
+			_cycleTaskImpl.Remove(old);
 		}
 		return _ib.TryRemove(id);
 	}
@@ -186,18 +208,42 @@ public class IdleScheduler : IDisposable
 			public void Dispose() => _disposeHandle?.Invoke();
 		}
 
-		public interface ICycleTaskStorage
+		public interface ICycleTask
 		{
-			List<CycleTaskinfo> LoadAll();
+			/// <summary>
+			/// 加载正在运行中的任务
+			/// </summary>
+			/// <returns></returns>
+			IEnumerable<CycleTaskinfo> LoadAll();
+			/// <summary>
+			/// 添加任务的时候触发
+			/// </summary>
+			/// <param name="task"></param>
 			void Add(CycleTaskinfo task);
+			/// <summary>
+			/// 删除任务的时候触发
+			/// </summary>
+			/// <param name="task"></param>
 			void Remove(CycleTaskinfo task);
+			/// <summary>
+			/// 更新任务的时候触发
+			/// </summary>
+			/// <param name="task"></param>
 			void Update(CycleTaskinfo task);
+
+			/// <summary>
+			/// 任务执行的时候触发
+			/// </summary>
+			/// <param name="scheduler"></param>
+			/// <param name="task"></param>
+			void Execute(IdleScheduler scheduler, CycleTaskinfo task);
 		}
 
 		public class CycleTaskinfo
 		{
 			public string Id { get; set; }
-			public string Text { get; set; }
+			public string Topic { get; set; }
+			public string Body { get; set; }
 			public DateTime CreateTime { get; set; }
 			public int MaxRunTimes { get; set; }
 			public Interval Interval { get; set; }
