@@ -1,6 +1,7 @@
 ﻿using Quartz;
 using Quartz.Impl;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Examples_vs_quartz
@@ -11,28 +12,38 @@ namespace Examples_vs_quartz
         {
             //QuartzSchedulerRun().Wait();
 
-            FluentSchedulerRun();
+            //FluentSchedulerRun();
 
-            //RunIdleScheduler();
+            //HashedWheelTimerRun();
+
+            IdleSchedulerRun();
 
             Console.ReadKey();
         }
 
         static IdleScheduler.Scheduler _idleScheduler;
-        static void RunIdleScheduler()
+        static DateTime IdleSchedulerRunStartTime;
+        static long IdleSchedulerRunTimes;
+        static void IdleSchedulerRun()
         {
             _idleScheduler = new IdleScheduler.Scheduler(new IdleScheduler.TaskHandlers.TestHandler());
+            IdleSchedulerRunStartTime = DateTime.Now;
+            IdleSchedulerRunTimes = 0;
             for (var a = 0; a < 50_0000; a++)
             {
-                //_idleScheduler.AddTempTask(TimeSpan.FromSeconds(10), () => {
-                //    Console.Out.WriteLine("Hello QuartzNet...");
-                //});
-                _idleScheduler.AddTask($"ajob{a}", $"group{a}", 1, 10);
+                _idleScheduler.AddTempTask(TimeSpan.FromSeconds(10), () =>
+                {
+                    Console.Out.WriteLine("Hello QuartzNet...");
+                    if (Interlocked.Increment(ref Program.IdleSchedulerRunTimes) == 50_0000)
+                        Console.Out.WriteLine($"IdleScheduler 执行 50w 个任务，耗时：{DateTime.Now.Subtract(Program.IdleSchedulerRunStartTime).TotalMilliseconds}ms");
+                });
+                //_idleScheduler.AddTask($"ajob{a}", $"group{a}", 1, 10);
             }
 
             Console.Out.WriteLine("OK   Hello QuartzNet...");
         }
 
+        #region Quartz
         static ISchedulerFactory _quartzfactory;
         static IScheduler _quartzScheduler;
         static async Task QuartzSchedulerRun()
@@ -73,15 +84,17 @@ namespace Examples_vs_quartz
                 await Console.Out.WriteLineAsync("Hello QuartzNet...");
             }
         }
+        #endregion
 
+        #region FluentScheduler
         static void FluentSchedulerRun()
         {
+            var registry = new FluentScheduler.Registry();
             for (var a = 0; a < 50_0000; a++)
             {
-                var registry = new FluentScheduler.Registry();
                 registry.Schedule<MyOtherJob>().WithName($"ajob{a}").ToRunOnceIn(10).Seconds();
-                FluentScheduler.JobManager.Initialize(registry);
             }
+            FluentScheduler.JobManager.Initialize(registry);
         }
         public class MyOtherJob : FluentScheduler.IJob
         {
@@ -90,5 +103,32 @@ namespace Examples_vs_quartz
                 Console.Out.WriteLine("Hello QuartzNet...");
             }
         }
+        #endregion
+
+        #region HashedWheelTimer
+        static HWT.HashedWheelTimer timer = new HWT.HashedWheelTimer(tickDuration: TimeSpan.FromSeconds(1)
+                , ticksPerWheel: 100000
+                , maxPendingTimeouts: 0);
+        static DateTime HashedWheelTimerRunStartTime;
+        static long HashedWheelTimerRunTimes;
+        static void HashedWheelTimerRun()
+        {
+            HashedWheelTimerRunStartTime = DateTime.Now;
+            HashedWheelTimerRunTimes = 0;
+            for (var a = 0; a < 50_0000; a++)
+            {
+                timer.NewTimeout(new HwtOneTimeTask(), TimeSpan.FromSeconds(10));
+            }
+        }
+        class HwtOneTimeTask : HWT.TimerTask
+        {
+            public void Run(HWT.Timeout timeout)
+            {
+                Console.Out.WriteLine("Hello QuartzNet...");
+                if (Interlocked.Increment(ref Program.HashedWheelTimerRunTimes) == 50_0000)
+                    Console.Out.WriteLine($"HashedWheelTimer 执行 50w 个任务，耗时：{DateTime.Now.Subtract(Program.HashedWheelTimerRunStartTime).TotalMilliseconds}ms");
+            }
+        }
+        #endregion
     }
 }

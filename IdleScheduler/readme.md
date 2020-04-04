@@ -20,7 +20,9 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 | -- | -- | -- |
 | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> |
 
-> FluentScheduler 单个 Registry 测试正常，但目测单线程执行(间隔10-100ms)，处理速度不理想 [View Code](https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/Program.cs)
+> FluentScheduler 单个 Registry 测试正常，但目测单线程执行(间隔1-10ms)，处理速度不理想 [View Code](https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/Program.cs)
+
+> HashedWheelTimer 效率最好，50W个任务执行完成 33697.8758ms(内存230M)，IdleScheduler 需要 75804.301ms
 
 ## Quick start
 
