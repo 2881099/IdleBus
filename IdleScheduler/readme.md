@@ -94,9 +94,11 @@ class Program
 FROM "idlescheduler_task" a
 WHERE (a."CurrentRound" < a."Round")
 
-=========sql: INSERT INTO "idlescheduler_task"("Id", "Topic", "Body", "Round", "Interval", "IntervalArgument", "CreateTime", "LastRunTime", "CurrentRound", "ErrorTimes") VALUES('20200404.14714252113887232', 'test001', 'data1', 10, 'SEC', '10', '2020-04-04 04:31:17', '1970-01-01 00:00:00', 0, 0)
+=========sql: INSERT INTO "idlescheduler_task"("Id", "Topic", "Body", "Round", "Interval", "IntervalArgument", "CreateTime", "LastRunTime", "CurrentRound", "ErrorTimes") 
+VALUES('20200404.14714252113887232', 'test001', 'data1', 10, 'SEC', '10', '2020-04-04 04:31:17', '1970-01-01 00:00:00', 0, 0)
 
-=========sql: INSERT INTO "idlescheduler_task"("Id", "Topic", "Body", "Round", "Interval", "IntervalArgument", "CreateTime", "LastRunTime", "CurrentRound", "ErrorTimes") VALUES('20200404.14714252114264064', 'test001', 'data1', 10, 'SEC', '10', '2020-04-04 04:31:17', '1970-01-01 00:00:00', 0, 0)
+=========sql: INSERT INTO "idlescheduler_task"("Id", "Topic", "Body", "Round", "Interval", "IntervalArgument", "CreateTime", "LastRunTime", "CurrentRound", "ErrorTimes") 
+VALUES('20200404.14714252114264064', 'test001', 'data1', 10, 'SEC', '10', '2020-04-04 04:31:17', '1970-01-01 00:00:00', 0, 0)
 
 [12:31:17] 注册耗时 47.1874ms，共计 2 个临时任务，2 个循环任务
 [12:31:28] test001 被执行，还剩 2 个循环任务
@@ -104,12 +106,14 @@ WHERE (a."CurrentRound" < a."Round")
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:28', "CurrentRound" = 1, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 1, 0, 1, NULL, 'testremark', '2020-04-04 04:31:28')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 1, 0, 1, NULL, 'testremark', '2020-04-04 04:31:28')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:28', "CurrentRound" = 1, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 1, 1, 1, NULL, 'testremark', '2020-04-04 04:31:28')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 1, 1, 1, NULL, 'testremark', '2020-04-04 04:31:28')
 
 [12:31:37] 20秒后被执行，还剩 1 个临时任务
 [12:31:38] 20秒后被执行，还剩 0 个临时任务
@@ -118,108 +122,126 @@ WHERE ("Id" = '20200404.14714252113887232')
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:39', "CurrentRound" = 2, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 2, 0, 1, NULL, 'testremark', '2020-04-04 04:31:39')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 2, 0, 1, NULL, 'testremark', '2020-04-04 04:31:39')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:39', "CurrentRound" = 2, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 2, 0, 1, NULL, 'testremark', '2020-04-04 04:31:39')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 2, 0, 1, NULL, 'testremark', '2020-04-04 04:31:39')
 
 [12:31:50] test001 被执行，还剩 2 个循环任务
 [12:31:50] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:50', "CurrentRound" = 3, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 3, 0, 1, NULL, 'testremark', '2020-04-04 04:31:50')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 3, 0, 1, NULL, 'testremark', '2020-04-04 04:31:50')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:31:50', "CurrentRound" = 3, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 3, 1, 1, NULL, 'testremark', '2020-04-04 04:31:50')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 3, 1, 1, NULL, 'testremark', '2020-04-04 04:31:50')
 
 [12:32:01] test001 被执行，还剩 2 个循环任务
 [12:32:01] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:01', "CurrentRound" = 4, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 4, 0, 1, NULL, 'testremark', '2020-04-04 04:32:01')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 4, 0, 1, NULL, 'testremark', '2020-04-04 04:32:01')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:01', "CurrentRound" = 4, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 4, 2, 1, NULL, 'testremark', '2020-04-04 04:32:01')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 4, 2, 1, NULL, 'testremark', '2020-04-04 04:32:01')
 
 [12:32:12] test001 被执行，还剩 2 个循环任务
 [12:32:12] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:12', "CurrentRound" = 5, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 5, 0, 1, NULL, 'testremark', '2020-04-04 04:32:12')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 5, 0, 1, NULL, 'testremark', '2020-04-04 04:32:12')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:12', "CurrentRound" = 5, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 5, 1, 1, NULL, 'testremark', '2020-04-04 04:32:12')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 5, 1, 1, NULL, 'testremark', '2020-04-04 04:32:12')
 
 [12:32:23] test001 被执行，还剩 2 个循环任务
 [12:32:23] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:23', "CurrentRound" = 6, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 6, 0, 1, NULL, 'testremark', '2020-04-04 04:32:23')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 6, 0, 1, NULL, 'testremark', '2020-04-04 04:32:23')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:23', "CurrentRound" = 6, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 6, 0, 1, NULL, 'testremark', '2020-04-04 04:32:23')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 6, 0, 1, NULL, 'testremark', '2020-04-04 04:32:23')
 
 [12:32:34] test001 被执行，还剩 2 个循环任务
 [12:32:34] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:34', "CurrentRound" = 7, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 7, 0, 1, NULL, 'testremark', '2020-04-04 04:32:34')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 7, 0, 1, NULL, 'testremark', '2020-04-04 04:32:34')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:34', "CurrentRound" = 7, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 7, 1, 1, NULL, 'testremark', '2020-04-04 04:32:34')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 7, 1, 1, NULL, 'testremark', '2020-04-04 04:32:34')
 
 [12:32:45] test001 被执行，还剩 2 个循环任务
 [12:32:45] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:45', "CurrentRound" = 8, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 8, 0, 1, NULL, 'testremark', '2020-04-04 04:32:45')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 8, 0, 1, NULL, 'testremark', '2020-04-04 04:32:45')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:45', "CurrentRound" = 8, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 8, 1, 1, NULL, 'testremark', '2020-04-04 04:32:45')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 8, 1, 1, NULL, 'testremark', '2020-04-04 04:32:45')
 
 [12:32:56] test001 被执行，还剩 2 个循环任务
 [12:32:56] test001 被执行，还剩 2 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:56', "CurrentRound" = 9, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 9, 0, 1, NULL, 'testremark', '2020-04-04 04:32:56')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 9, 0, 1, NULL, 'testremark', '2020-04-04 04:32:56')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:32:56', "CurrentRound" = 9, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 9, 3, 1, NULL, 'testremark', '2020-04-04 04:32:56')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 9, 3, 1, NULL, 'testremark', '2020-04-04 04:32:56')
 
 [12:33:07] test001 被执行，还剩 0 个循环任务
 [12:33:07] test001 被执行，还剩 0 个循环任务
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:33:07', "CurrentRound" = 10, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252114264064')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252114264064', 10, 0, 1, NULL, 'testremark', '2020-04-04 04:33:07')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252114264064', 10, 0, 1, NULL, 'testremark', '2020-04-04 04:33:07')
 
 =========sql: UPDATE "idlescheduler_task" SET "LastRunTime" = '2020-04-04 04:33:07', "CurrentRound" = 10, "ErrorTimes" = 0
 WHERE ("Id" = '20200404.14714252113887232')
 
-=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") VALUES('20200404.14714252113887232', 10, 1, 1, NULL, 'testremark', '2020-04-04 04:33:07')
+=========sql: INSERT INTO "idlescheduler_tasklog"("TaskId", "Round", "ElapsedMilliseconds", "Success", "Exception", "Remark", "CreateTime") 
+VALUES('20200404.14714252113887232', 10, 1, 1, NULL, 'testremark', '2020-04-04 04:33:07')
 
 [12:33:11] 耗时 113186.9488ms，还剩 0 个任务，0 个循环任务
 
