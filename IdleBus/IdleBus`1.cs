@@ -40,27 +40,14 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get(string key) => InternalGet(key, true);
-    /// <summary>
-    /// 根据 key 获得或创建【实例】（线程安全）<para></para>
-    /// key 未注册时，返回 null
-    /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public T TryGet(string key) => InternalGet(key, false);
-
-    T InternalGet(string key, bool isThrow)
+    public T Get(string key)
     {
-        if (isdisposed && isThrow) throw new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
-            if (isThrow)
-            {
-                var error = new Exception($"{key} 实例获取失败，因为没有注册");
-                this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, error, error.Message));
-                throw error;
-            }
-            return null;
+            var error = new Exception($"{key} 实例获取失败，因为没有注册");
+            this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, error, error.Message));
+            throw error;
         }
 
         var now = DateTime.Now;
@@ -71,6 +58,13 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         this.ThreadScanWatch(item); //这种在后台扫描 _dic ，定时要求可能没那么及时
         return ret;
     }
+
+    /// <summary>
+    /// 判断 key 是否注册
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public bool Exists(string key) => _dic.ContainsKey(key);
 
     /// <summary>
     /// 注册【实例】

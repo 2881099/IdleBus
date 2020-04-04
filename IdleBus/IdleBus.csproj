@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>YeXiangQin</Authors>
     <Description>IdleBus 空闲对象管理容器，有效组织对象重复利用，自动创建、销毁，解决【实例】过多且长时间占用的问题。</Description>

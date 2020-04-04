@@ -44,10 +44,9 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:IdleBus`1.TryGet(System.String)">
+        <member name="M:IdleBus`1.Exists(System.String)">
             <summary>
-            根据 key 获得或创建【实例】（线程安全）<para></para>
-            key 未注册时，返回 null
+            判断 key 是否注册
             </summary>
             <param name="key"></param>
             <returns></returns>

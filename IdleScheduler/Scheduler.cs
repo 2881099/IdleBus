@@ -6,11 +6,14 @@ using System.Threading;
 
 namespace IdleScheduler
 {
+	/// <summary>
+	/// 调度管理临时任务(一次性)、循环任务(存储落地)
+	/// </summary>
 	public class Scheduler : IDisposable
 	{
 		IdleBus _ib;
 		int _quantityTempTask;
-		int _quantityCycleTask;
+		int _quantityTask;
 		/// <summary>
 		/// 临时任务数量
 		/// </summary>
@@ -18,11 +21,11 @@ namespace IdleScheduler
 		/// <summary>
 		/// 循环任务数量
 		/// </summary>
-		public int QuantityCycleTask => _quantityCycleTask;
+		public int QuantityTask => _quantityTask;
 
 		WorkQueue _wq;
-		ICycleTaskHandler _cycleTaskImpl;
-		ConcurrentDictionary<string, CycleTaskInfo> _cycleTasks = new ConcurrentDictionary<string, CycleTaskInfo>();
+		ITaskHandler _taskHandler;
+		ConcurrentDictionary<string, TaskInfo> _tasks = new ConcurrentDictionary<string, TaskInfo>();
 
 		#region Dispose
 		~Scheduler() => Dispose();
@@ -38,17 +41,17 @@ namespace IdleScheduler
 			}
 			_ib?.Dispose();
 			_wq?.Dispose();
-			_cycleTasks?.Clear();
+			_tasks?.Clear();
 			Interlocked.Exchange(ref _quantityTempTask, 0);
-			Interlocked.Exchange(ref _quantityCycleTask, 0);
-			(_cycleTaskImpl as IDisposable)?.Dispose();
+			Interlocked.Exchange(ref _quantityTask, 0);
+			(_taskHandler as IDisposable)?.Dispose();
 		}
 		#endregion
 
-		public Scheduler(ICycleTaskHandler cycleTaskImpl)
+		public Scheduler(ITaskHandler taskHandler)
 		{
-			if (cycleTaskImpl == null) throw new ArgumentNullException("cycleTaskImpl 参数不能为  null");
-			_cycleTaskImpl = cycleTaskImpl;
+			if (taskHandler == null) throw new ArgumentNullException("taskHandler 参数不能为  null");
+			_taskHandler = taskHandler;
 
 			_ib = new IdleBus();
 			_ib.ScanOptions.IntervalSeconds = 1;
@@ -60,9 +63,9 @@ namespace IdleScheduler
 			});
 			_wq = new WorkQueue(30);
 
-			var tasks = _cycleTaskImpl.LoadAll();
+			var tasks = _taskHandler.LoadAll();
 			foreach (var task in tasks)
-				AddCycleTaskPriv(task, false);
+				AddTaskPriv(task, false);
 		}
 
 		/// <summary>
@@ -88,13 +91,22 @@ namespace IdleScheduler
 			}
 			return id;
 		}
-
 		/// <summary>
-		/// 判断循环任务是否存在
+		/// 删除临时任务
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public bool ExistsCycleTask(string id) => _cycleTasks.ContainsKey(id);
+		public bool RemoveTempTask(string id)
+		{
+			if (_tasks.ContainsKey(id)) return false;
+			return _ib.TryRemove(id);
+		}
+		/// <summary>
+		/// 判断临时任务是否存在
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool ExistsTempTask(string id) => _tasks.ContainsKey(id) == false && _ib.Exists(id);
 
 		/// <summary>
 		/// 添加循环执行的任务
@@ -104,25 +116,25 @@ namespace IdleScheduler
 		/// <param name="round">循环次数</param>
 		/// <param name="seconds">秒数</param>
 		/// <returns></returns>
-		public string AddCycleTask(string topic, string body, int round, int seconds) => AddCycleTaskPriv(topic, body, round, CycleTaskInterval.SEC, string.Concat(seconds));
+		public string AddTask(string topic, string body, int round, int seconds) => AddTaskPriv(topic, body, round, TaskInterval.SEC, string.Concat(seconds));
 		/// <summary>
 		/// 添加循环执行的任务（每天的什么时候执行）
 		/// </summary>
 		/// <returns></returns>
-		public string AddCycleTaskRunOnDay(string topic, string body, int round, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, round, CycleTaskInterval.RunOnDay, $"{hour}:{minute}:{second}");
+		public string AddTaskRunOnDay(string topic, string body, int round, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnDay, $"{hour}:{minute}:{second}");
 		/// <summary>
 		/// 添加循环执行的任务（每个星期的什么时候执行）
 		/// </summary>
 		/// <returns></returns>
-		public string AddCycleTaskRunOnWeek(string topic, string body, int round, int week, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, round, CycleTaskInterval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
+		public string AddTaskRunOnWeek(string topic, string body, int round, int week, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
 		/// <summary>
 		/// 添加循环执行的任务（每个月的什么时候执行）
 		/// </summary>
 		/// <returns></returns>
-		public string AddCycleTaskRunOnMonth(string topic, string body, int round, int day, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, round, CycleTaskInterval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
-		string AddCycleTaskPriv(string topic, string body, int round, CycleTaskInterval interval, string intervalArgument)
+		public string AddTaskRunOnMonth(string topic, string body, int round, int day, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
+		string AddTaskPriv(string topic, string body, int round, TaskInterval interval, string intervalArgument)
 		{
-			var task = new CycleTaskInfo
+			var task = new TaskInfo
 			{
 				Id = $"{DateTime.UtcNow.ToString("yyyyMMdd")}.{Snowfake.Default.nextId().ToString()}",
 				Topic = topic,
@@ -135,10 +147,10 @@ namespace IdleScheduler
 				ErrorTimes = 0,
 				LastRunTime = new DateTime(1970, 1, 1)
 			};
-			AddCycleTaskPriv(task, true);
+			AddTaskPriv(task, true);
 			return task.Id;
 		}
-		void AddCycleTaskPriv(CycleTaskInfo task, bool isSave)
+		void AddTaskPriv(TaskInfo task, bool isSave)
 		{
 			if (task.CurrentRound >= task.Round) return;
 			IdleTimeout bus = null;
@@ -149,22 +161,22 @@ namespace IdleScheduler
 				var round = task.Round;
 				if (currentRound >= round)
 				{
-					if (_cycleTasks.TryRemove(task.Id, out var old))
-						Interlocked.Decrement(ref _quantityCycleTask);
+					if (_tasks.TryRemove(task.Id, out var old))
+						Interlocked.Decrement(ref _quantityTask);
 				}
 				_wq.Enqueue(() =>
 				{
-					var result = new CycleTaskExecuteResultInfo
+					var result = new TaskLog
 					{
 						CreateTime = DateTime.UtcNow,
-						CycleTaskId = task.Id,
+						TaskId = task.Id,
 						Round = currentRound,
 						Success = true
 					};
 					var startdt = DateTime.UtcNow;
 					try
 					{
-						_cycleTaskImpl.OnExecuting(this, task);
+						_taskHandler.OnExecuting(this, task);
 					}
 					catch (Exception ex)
 					{
@@ -176,46 +188,51 @@ namespace IdleScheduler
 					{
 						result.ElapsedMilliseconds = (long)DateTime.UtcNow.Subtract(startdt).TotalMilliseconds;
 						task.LastRunTime = DateTime.UtcNow;
-						_cycleTaskImpl.OnExecuted(this, task, result);
+						_taskHandler.OnExecuted(this, task, result);
 					}
 					if (currentRound < round)
 						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
 							_ib.Get(task.Id);
 				});
 			});
-			if (_cycleTasks.TryAdd(task.Id, task))
+			if (_tasks.TryAdd(task.Id, task))
 			{
 				if (isSave)
 				{
 					try
 					{
-						_cycleTaskImpl.OnAdd(task);
+						_taskHandler.OnAdd(task);
 					}
 					catch
 					{
-						_cycleTasks.TryRemove(task.Id, out var old);
+						_tasks.TryRemove(task.Id, out var old);
 						throw;
 					}
 				}
-				Interlocked.Increment(ref _quantityCycleTask);
+				Interlocked.Increment(ref _quantityTask);
 				if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
 					_ib.Get(task.Id);
 			}
 		}
-
 		/// <summary>
-		/// 删除临时任务或循环任务
+		/// 删除循环任务
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public bool RemoveTask(string id)
 		{
-			if (_cycleTasks.TryRemove(id, out var old))
+			if (_tasks.TryRemove(id, out var old))
 			{
-				Interlocked.Decrement(ref _quantityCycleTask);
-				_cycleTaskImpl.OnRemove(old);
+				Interlocked.Decrement(ref _quantityTask);
+				_taskHandler.OnRemove(old);
 			}
 			return _ib.TryRemove(id);
 		}
+		/// <summary>
+		/// 判断循环任务是否存在
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool ExistsTask(string id) => _tasks.ContainsKey(id);
 	}
 }

@@ -4,12 +4,12 @@ using System.Text;
 
 namespace IdleScheduler
 {
-	public class CycleTaskExecuteResultInfo
+	public class TaskLog
 	{
 		/// <summary>
 		/// 任务编号
 		/// </summary>
-		public string CycleTaskId { get; set; }
+		public string TaskId { get; set; }
 		/// <summary>
 		/// 第几轮
 		/// </summary>

@@ -9,18 +9,13 @@ namespace ConsoleApp1
     class Program
     {
 
-        class MyCycleTaskHandler : IdleScheduler.CycleTaskHandlers.FreeSqlHandler, IDisposable
+        class MyTaskHandler : IdleScheduler.TaskHandlers.FreeSqlHandler
         {
-            public MyCycleTaskHandler(IFreeSql fsql) : base(fsql) { }
+            public MyTaskHandler(IFreeSql fsql) : base(fsql) { }
 
-
-            public override void OnExecuting(Scheduler scheduler, CycleTaskInfo task)
+            public override void OnExecuting(Scheduler scheduler, TaskInfo task)
             {
-                Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {task.Topic} 被执行，还剩 {scheduler.QuantityCycleTask} 个循环任务");
-            }
-
-            public void Dispose()
-            {
+                Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {task.Topic} 被执行，还剩 {scheduler.QuantityTask} 个循环任务");
             }
         }
 
@@ -33,10 +28,9 @@ namespace ConsoleApp1
                 .UseMonitorCommand(cmd => Console.WriteLine($"=========sql: {cmd.CommandText}\r\n"))
                 .Build();
 
-            Scheduler scheduler = new Scheduler(new MyCycleTaskHandler(fsql));
+            Scheduler scheduler = new Scheduler(new MyTaskHandler(fsql));
 
             var dt = DateTime.Now;
-
             for (var a = 0; a < 2; a++)
             {
                 //临时任务
@@ -46,18 +40,15 @@ namespace ConsoleApp1
                 });
 
                 //循环任务，执行10次，每次间隔1小时
-                scheduler.AddCycleTask(topic: "test001", body: "data1", round: 10, seconds: 10);
+                scheduler.AddTask(topic: "test001", body: "data1", round: 10, seconds: 10);
             }
-
             var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
-            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 注册耗时 {dtts}ms，共计 {scheduler.QuantityTempTask} 个临时任务，{scheduler.QuantityCycleTask} 个循环任务");
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 注册耗时 {dtts}ms，共计 {scheduler.QuantityTempTask} 个临时任务，{scheduler.QuantityTask} 个循环任务");
 
             Console.ReadKey();
 
             dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
-            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 耗时 {dtts}ms，还剩 {scheduler.QuantityTempTask} 个任务，{scheduler.QuantityCycleTask} 个循环任务");
-            Console.ReadKey();
-
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 耗时 {dtts}ms，还剩 {scheduler.QuantityTempTask} 个任务，{scheduler.QuantityTask} 个循环任务");
             scheduler.Dispose();
             fsql.Dispose();
         }

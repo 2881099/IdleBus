@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace IdleScheduler
 {
-	public class CycleTaskInfo
+	public class TaskInfo
 	{
 		/// <summary>
 		/// 任务编号
@@ -26,7 +26,7 @@ namespace IdleScheduler
 		/// <summary>
 		/// 定时类型
 		/// </summary>
-		public CycleTaskInterval Interval { get; set; }
+		public TaskInterval Interval { get; set; }
 		/// <summary>
 		/// 定时参数值
 		/// </summary>
@@ -62,11 +62,11 @@ namespace IdleScheduler
 			double interval = -1;
 			switch (Interval)
 			{
-				case CycleTaskInterval.SEC:
+				case TaskInterval.SEC:
 					double.TryParse(IntervalArgument, out interval);
 					interval *= 1000;
 					break;
-				case CycleTaskInterval.RunOnDay:
+				case TaskInterval.RunOnDay:
 					List<string> hhmmss = new List<string>(string.Concat(IntervalArgument).Split(':'));
 					if (hhmmss.Count == 3)
 						if (uint.TryParse(hhmmss[0], out hh) && hh < 24 &&
@@ -83,7 +83,7 @@ namespace IdleScheduler
 							interval = ts.TotalMilliseconds;
 						}
 					break;
-				case CycleTaskInterval.RunOnWeek:
+				case TaskInterval.RunOnWeek:
 					string[] wwhhmmss = string.Concat(IntervalArgument).Split(':');
 					if (wwhhmmss.Length == 4)
 						if (uint.TryParse(wwhhmmss[0], out ww) && ww < 7 &&
@@ -101,7 +101,7 @@ namespace IdleScheduler
 							interval = ts.TotalMilliseconds;
 						}
 					break;
-				case CycleTaskInterval.RunOnMonth:
+				case TaskInterval.RunOnMonth:
 					string[] ddhhmmss = string.Concat(IntervalArgument).Split(':');
 					if (ddhhmmss.Length == 4)
 						if (uint.TryParse(ddhhmmss[0], out dd) && dd > 0 && dd < 32 &&

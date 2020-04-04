@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IdleScheduler
 {
-	public enum CycleTaskInterval
+	public enum TaskInterval
 	{
 		/// <summary>
 		/// 按秒触发
