@@ -7,24 +7,24 @@ namespace IdleScheduler
 	public interface ITaskHandler
 	{
 		/// <summary>
-		/// 加载正在运行中的任务
+		/// 加载正在运行中的任务（从持久化中加载）
 		/// </summary>
 		/// <returns></returns>
 		IEnumerable<TaskInfo> LoadAll();
 
 		/// <summary>
-		/// 添加任务的时候触发（落地保存）
+		/// 添加任务的时候触发（持久化）
 		/// </summary>
 		/// <param name="task"></param>
 		void OnAdd(TaskInfo task);
 		/// <summary>
-		/// 删除任务的时候触发（落地保存）
+		/// 删除任务的时候触发（持久化）
 		/// </summary>
 		/// <param name="task"></param>
 		void OnRemove(TaskInfo task);
 
 		/// <summary>
-		/// 执行任务完成的时候触发（落地保存）
+		/// 执行任务完成的时候触发（持久化）
 		/// </summary>
 		/// <param name="scheduler"></param>
 		/// <param name="task"></param>

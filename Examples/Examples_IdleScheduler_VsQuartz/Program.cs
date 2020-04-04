@@ -11,7 +11,9 @@ namespace Examples_vs_quartz
         {
             //QuartzSchedulerRun().Wait();
 
-            RunIdleScheduler();
+            FluentSchedulerRun();
+
+            //RunIdleScheduler();
 
             Console.ReadKey();
         }
@@ -66,9 +68,26 @@ namespace Examples_vs_quartz
             /// </summary>
             /// <param name="context"></param>
             /// <returns></returns>
-            public async Task Execute(IJobExecutionContext context)
+            async public Task Execute(IJobExecutionContext context)
             {
                 await Console.Out.WriteLineAsync("Hello QuartzNet...");
+            }
+        }
+
+        static void FluentSchedulerRun()
+        {
+            for (var a = 0; a < 50_0000; a++)
+            {
+                var registry = new FluentScheduler.Registry();
+                registry.Schedule<MyOtherJob>().WithName($"ajob{a}").ToRunOnceIn(10).Seconds();
+                FluentScheduler.JobManager.Initialize(registry);
+            }
+        }
+        public class MyOtherJob : FluentScheduler.IJob
+        {
+            public void Execute()
+            {
+                Console.Out.WriteLine("Hello QuartzNet...");
             }
         }
     }

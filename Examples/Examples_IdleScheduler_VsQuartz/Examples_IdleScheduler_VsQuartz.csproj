@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentScheduler" Version="5.3.0" />
     <PackageReference Include="Quartz" Version="3.0.7" />
   </ItemGroup>
 
