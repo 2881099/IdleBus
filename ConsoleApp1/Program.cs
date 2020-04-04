@@ -39,7 +39,7 @@ namespace ConsoleApp1
                     Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 20秒后被执行，还剩 {scheduler.QuantityTempTask} 个临时任务");
                 });
 
-                //循环任务，执行10次，每次间隔1小时
+                //循环任务，执行10次，每次间隔10秒
                 scheduler.AddTask(topic: "test001", body: "data1", round: 10, seconds: 10);
             }
             var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
