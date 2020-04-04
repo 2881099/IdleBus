@@ -16,7 +16,7 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 ## Performance
 
-| 500,000 Tasks | 500,000 Tasks |
+| IdleSchduler (500,000 Tasks) | Quartz.net (500,000 Tasks) |
 | -- | -- |
 | <img src="https://github.com/2881099/IdleBus/blob/master/IdleScheduler/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/IdleScheduler/performance_quartz.png?raw=true"/> |
 
