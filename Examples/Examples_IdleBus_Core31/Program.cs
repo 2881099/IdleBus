@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace TestCore31
+namespace Examples_IdleBus_Core31
 {
     class Program
     {

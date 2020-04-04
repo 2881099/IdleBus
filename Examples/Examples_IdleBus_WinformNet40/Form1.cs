@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace TestWinformNet40
+namespace Examples_IdleBus_WinformNet40
 {
     public partial class Form1 : Form
     {

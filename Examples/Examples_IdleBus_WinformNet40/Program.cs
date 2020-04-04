@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace TestWinformNet40
+namespace Examples_IdleBus_WinformNet40
 {
     static class Program
     {

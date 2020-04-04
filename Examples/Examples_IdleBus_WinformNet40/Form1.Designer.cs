@@ -1,4 +1,4 @@
-﻿namespace TestWinformNet40
+﻿namespace Examples_IdleBus_WinformNet40
 {
     partial class Form1
     {

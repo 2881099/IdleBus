@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0FC8305A-114E-4792-9226-726FE3651CB0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TestWinformNet40</RootNamespace>
-    <AssemblyName>TestWinformNet40</AssemblyName>
+    <RootNamespace>Examples_IdleBus_WinformNet40</RootNamespace>
+    <AssemblyName>Examples_IdleBus_WinformNet40</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -76,7 +76,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IdleBus\IdleBus.csproj">
+    <ProjectReference Include="..\..\IdleBus\IdleBus.csproj">
       <Project>{ab044be0-8676-481f-a454-3ad68b8bbe54}</Project>
       <Name>IdleBus</Name>
     </ProjectReference>

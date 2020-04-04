@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestWinformNet40.Properties {
+namespace Examples_IdleBus_WinformNet40.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

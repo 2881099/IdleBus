@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace ConsoleApp1
+namespace Examples_IdleScheduler_Core31
 {
     class Program
     {

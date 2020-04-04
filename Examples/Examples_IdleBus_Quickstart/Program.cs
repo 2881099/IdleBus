@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleApp2
+namespace Examples_IdleBus_Quickstart
 {
     class Program
     {
