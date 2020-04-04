@@ -5,14 +5,14 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 | Method | 说明 |
 | -- | -- |
 | void Ctor(ITaskHandler) | 指定任务调度器（单例） |
-| string AddTempTask(TimeSpan, Action) | 创建临时的延时任务，返回 id |
 | string AddTask(string topic, string body, int times, int seconds) | 创建循环定时任务，返回 id |
+| string AddTempTask(TimeSpan, Action) | 创建临时的延时任务，返回 id |
 | bool RemoveTask(string id) | 删除任务(循环定时任务) |
 | bool RemoveTempTask(string id) | 删除任务(临时任务) |
-| bool ExistsTempTask(string id) | 判断任务是否存在(临时任务) |
 | bool ExistsTask(string id) | 判断任务是否存在(循环定时任务) |
-| int QuantityTempTask | 任务数量(临时任务) |
+| bool ExistsTempTask(string id) | 判断任务是否存在(临时任务) |
 | int QuantityTask | 任务数量(循环定时任务) |
+| int QuantityTempTask | 任务数量(临时任务) |
 
 ## Quick start
 
