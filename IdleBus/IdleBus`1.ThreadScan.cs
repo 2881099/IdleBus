@@ -79,7 +79,7 @@ partial class IdleBus<T>
                 if (isdisposed) return;
                 if (++keysIndex % ScanOptions.BatchQuantity == 0)
                 {
-                    if (keys.Length > 10240) //任务数量太多的时候，延时1秒
+                    if (keys.Length > 102400) //任务数量太多的时候，延时1秒
                     {
                         if (ThreadJoin(1) == false) return;
                     }

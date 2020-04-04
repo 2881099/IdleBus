@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IdleScheduler.TaskHandlers
 {
-    public class MemoryHandler : ITaskHandler
+    public class TestHandler : ITaskHandler
     {
         public IEnumerable<TaskInfo> LoadAll() => new TaskInfo[0];
         public void OnAdd(TaskInfo task) { }
