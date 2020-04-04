@@ -134,6 +134,7 @@ IdleBus 又像缓存，又像池，又像容器，无法具体描述。
 - Redis 客户端需要操作 N 个 服务器；
 - Socket 长连接闲置后自动释放；
 - 管理 1000个 rabbitmq 服务器的客户端；
+- [IdleScheduler](https://github.com/2881099/IdleBus/tree/master/IdleScheduler) 利用 IdleBus 实现的轻量定时任务调度；
 - 等等等。。。
 
 举例：向 1000个 (不同的、不同的、不同的) rabbitmq 服务器发送消息，正常有两种做法：
