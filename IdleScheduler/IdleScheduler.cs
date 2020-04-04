@@ -90,6 +90,13 @@ namespace IdleScheduler
 		}
 
 		/// <summary>
+		/// 判断循环任务是否存在
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool ExistsCycleTask(string id) => _cycleTasks.ContainsKey(id);
+
+		/// <summary>
 		/// 添加循环执行的任务
 		/// </summary>
 		/// <param name="topic">名称</param>
@@ -113,7 +120,6 @@ namespace IdleScheduler
 		/// </summary>
 		/// <returns></returns>
 		public string AddCycleTaskRunOnMonth(string topic, string body, int round, int day, int hour, int minute, int second) => AddCycleTaskPriv(topic, body, round, CycleTaskInterval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
-
 		string AddCycleTaskPriv(string topic, string body, int round, CycleTaskInterval interval, string intervalArgument)
 		{
 			var task = new CycleTaskInfo
@@ -132,7 +138,6 @@ namespace IdleScheduler
 			AddCycleTaskPriv(task, true);
 			return task.Id;
 		}
-
 		void AddCycleTaskPriv(CycleTaskInfo task, bool isSave)
 		{
 			if (task.CurrentRound >= task.Round) return;
@@ -199,7 +204,7 @@ namespace IdleScheduler
 		}
 
 		/// <summary>
-		/// 删除任务
+		/// 删除临时任务或循环任务
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
