@@ -18,7 +18,7 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 | IdleSchduler | Quartz.net | FluentScheduler | HashedWheelTimer |
 | -- | -- | -- | -- |
-| (500,000 Tasks) | (500,000 Tasks) | (500,000 Tasks) | (500,000 Tasks) |
+| (500,000 Tasks + 10s) | (500,000 Tasks + 10s) | (500,000 Tasks + 10s) | (500,000 Tasks + 10s) |
 | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_hashedwheeltimer.png?raw=true"/> |
 | 383M | 1700+M | StackOverflow | 213M |
 | 70563.6066ms | 50692.5365ms | 未知 | 33697.8758ms |
