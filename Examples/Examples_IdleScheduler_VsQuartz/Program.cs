@@ -12,11 +12,11 @@ namespace Examples_vs_quartz
         {
             //QuartzSchedulerRun().Wait();
 
-            //FluentSchedulerRun();
+            FluentSchedulerRun();
 
             //HashedWheelTimerRun();
 
-            IdleSchedulerRun();
+            //IdleSchedulerRun();
 
             Console.ReadKey();
         }
@@ -100,12 +100,12 @@ namespace Examples_vs_quartz
         #region FluentScheduler
         static void FluentSchedulerRun()
         {
-            var registry = new FluentScheduler.Registry();
             for (var a = 0; a < 50_0000; a++)
             {
+                var registry = new FluentScheduler.Registry();
                 registry.Schedule<MyOtherJob>().WithName($"ajob{a}").ToRunOnceIn(10).Seconds();
+                FluentScheduler.JobManager.Initialize(registry);
             }
-            FluentScheduler.JobManager.Initialize(registry);
         }
         public class MyOtherJob : FluentScheduler.IJob
         {
