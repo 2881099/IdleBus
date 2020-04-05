@@ -42,7 +42,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// <returns></returns>
     public T Get(string key)
     {
-        if (isdisposed) throw new Exception($"{key} 实例获取失败 ，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 实例获取失败，{nameof(IdleBus<T>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
             var error = new Exception($"{key} 实例获取失败，因为没有注册");
@@ -55,7 +55,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         var tsms = DateTime.Now.Subtract(now).TotalMilliseconds;
         this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, null, $"{key} 实例获取成功 {item.activeCounter}次{(tsms > 5 ? $"，耗时 {tsms}ms" : "")}"));
         //this.ThreadLiveWatch(item); //这种模式采用 Sorted 性能会比较慢
-        this.ThreadScanWatch(item); //这种在后台扫描 _dic ，定时要求可能没那么及时
+        this.ThreadScanWatch(item); //这种在后台扫描 _dic，定时要求可能没那么及时
         return ret;
     }
 
@@ -85,7 +85,6 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     public bool TryRegister(string key, Func<T> create) => InternalRegister(key, create, null, false);
     public bool TryRegister(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
 
-    //public void Remove(string key) => InternalRemove(key, true);
     public bool TryRemove(string key) => InternalRemove(key, false);
 
     /// <summary>
@@ -103,7 +102,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
 
     bool InternalRegister(string key, Func<T> create, TimeSpan? idle, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 注册失败 ，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 注册失败，{nameof(IdleBus<T>)} 对象已释放");
         var error = new Exception($"{key} 注册失败，请勿重复注册");
         if (_dic.ContainsKey(key))
         {

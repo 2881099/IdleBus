@@ -32,11 +32,11 @@ partial class IdleBus<T>
     public class TimeoutScanOptions
     {
         /// <summary>
-        /// 扫描间隔秒数（默认值：2）
+        /// 扫描线程间隔（默认值：2秒）
         /// </summary>
-        public int IntervalSeconds { get; set; } = 2;
+        public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(2);
         /// <summary>
-        /// 扫描的线程空闲多少秒才退出（默认值：10秒）
+        /// 扫描线程空闲多少秒退出（默认值：10秒）
         /// </summary>
         public int QuitWaitSeconds { get; set; } = 10;
         /// <summary>
@@ -45,9 +45,9 @@ partial class IdleBus<T>
         /// </summary>
         public int BatchQuantity { get; set; } = 512;
         /// <summary>
-        /// 达到扫描的每批数量时，线程等待的秒数（默认值：1）
+        /// 达到扫描的每批数量时，线程等待（默认值：1秒）
         /// </summary>
-        public int BatchQuantityWaitSeconds { get; set; } = 1;
+        public TimeSpan BatchQuantityWait { get; set; } = TimeSpan.FromSeconds(1);
     }
     /// <summary>
     /// 扫描过期对象的设置<para></para>
@@ -61,12 +61,12 @@ partial class IdleBus<T>
         var couter = 0;
         while (isdisposed == false)
         {
-            if (ThreadJoin(ScanOptions.IntervalSeconds) == false) return;
+            if (ThreadJoin(ScanOptions.Interval) == false) return;
             this.InternalRemoveDelayHandler();
 
             if (_usageQuantity == 0)
             {
-                couter = couter + ScanOptions.IntervalSeconds;
+                couter = couter + (int)ScanOptions.Interval.TotalSeconds;
                 if (couter < ScanOptions.QuitWaitSeconds) continue;
                 break;
             }
@@ -77,17 +77,10 @@ partial class IdleBus<T>
             foreach (var key in keys)
             {
                 if (isdisposed) return;
-                if (++keysIndex % ScanOptions.BatchQuantity == 0)
+                ++keysIndex;
+                if (ScanOptions.BatchQuantity > 0 && keysIndex % ScanOptions.BatchQuantity == 0)
                 {
-                    //if (keys.Length > 10240) //任务数量太多的时候，延时1秒
-                    //{
-                    //    if (ThreadJoin(1) == false) return;
-                    //}
-                    //else
-                    if (ScanOptions.BatchQuantityWaitSeconds > 0)
-                    {
-                        if (ThreadJoin(ScanOptions.BatchQuantityWaitSeconds) == false) return;
-                    }
+                    if (ThreadJoin(ScanOptions.BatchQuantityWait) == false) return;
                 }
 
                 if (_dic.TryGetValue(key, out var item) == false) continue;
@@ -108,11 +101,21 @@ partial class IdleBus<T>
         }
     }
 
-    bool ThreadJoin(int seconds)
+    bool ThreadJoin(TimeSpan interval)
     {
+        if (interval <= TimeSpan.Zero) return true;
+        var milliseconds = interval.TotalMilliseconds;
+        var seconds = Math.Floor(milliseconds / 1000);
+        milliseconds = milliseconds - seconds * 1000;
+
         for (var a = 0; a < seconds; a++)
         {
             Thread.CurrentThread.Join(TimeSpan.FromSeconds(1));
+            if (isdisposed) return false;
+        }
+        for (var a = 0; a < milliseconds; a+= 200)
+        {
+            Thread.CurrentThread.Join(TimeSpan.FromMilliseconds(200));
             if (isdisposed) return false;
         }
         return true;

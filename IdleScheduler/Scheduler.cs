@@ -54,10 +54,10 @@ namespace IdleScheduler
 			_taskHandler = taskHandler;
 
 			_ib = new IdleBus();
-			_ib.ScanOptions.IntervalSeconds = 1;
-			_ib.ScanOptions.BatchQuantity = 1024;
-			_ib.ScanOptions.BatchQuantityWaitSeconds = 0;
-			_ib.ScanOptions.QuitWaitSeconds = 10;
+			_ib.ScanOptions.Interval = TimeSpan.FromMilliseconds(200);
+			_ib.ScanOptions.BatchQuantity = 100000;
+			_ib.ScanOptions.BatchQuantityWait = TimeSpan.FromMilliseconds(100);
+			_ib.ScanOptions.QuitWaitSeconds = 20;
 			_ib.Notice += new EventHandler<IdleBus<IDisposable>.NoticeEventArgs>((s, e) =>
 			{
 			});

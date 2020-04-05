@@ -16,13 +16,15 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 ## Performance
 
-| IdleSchduler (500,000 Tasks) | Quartz.net (500,000 Tasks) | FluentScheduler (500,000 Tasks) |
-| -- | -- | -- |
-| <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> |
+| | IdleSchduler (500,000 Tasks) | Quartz.net (500,000 Tasks) | FluentScheduler (500,000 Tasks) | HashedWheelTimer (500,000 Tasks) |
+| -- | -- | -- | -- | -- |
+| | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_hashedwheeltimer.png?raw=true"/> |
+| 内存 | 383M | 1700+M | 未知 | 213M |
+| 耗时 | 70563.6066ms | 50692.5365ms | 未知 | 33697.8758ms |
 
 > FluentScheduler 单个 Registry 测试正常，但目测单线程执行(间隔1-10ms)，处理速度不理想 [View Code](https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/Program.cs)
 
-> HashedWheelTimer 效率最好，50W个任务执行完成 33697.8758ms(内存230M)，IdleScheduler 需要 75804.301ms
+> 我尝试把内核改成 HashedWheelTimer 后内存占用更高(600兆)，结论：IdleSheduler 功能比它多需要占用更多资源
 
 ## Quick start
 

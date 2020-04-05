@@ -99,14 +99,14 @@
             获取【实例】的时候
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.IntervalSeconds">
+        <member name="P:IdleBus`1.TimeoutScanOptions.Interval">
             <summary>
-            扫描间隔秒数（默认值：2）
+            扫描线程间隔（默认值：2秒）
             </summary>
         </member>
         <member name="P:IdleBus`1.TimeoutScanOptions.QuitWaitSeconds">
             <summary>
-            扫描的线程空闲多少秒才退出（默认值：10秒）
+            扫描线程空闲多少秒退出（默认值：10秒）
             </summary>
         </member>
         <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantity">
@@ -115,9 +115,9 @@
             可防止注册数量太多时导致 CPU 占用过高
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantityWaitSeconds">
+        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantityWait">
             <summary>
-            达到扫描的每批数量时，线程等待的秒数（默认值：1）
+            达到扫描的每批数量时，线程等待（默认值：1秒）
             </summary>
         </member>
         <member name="P:IdleBus`1.ScanOptions">

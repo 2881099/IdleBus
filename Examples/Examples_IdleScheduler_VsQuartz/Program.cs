@@ -35,7 +35,10 @@ namespace Examples_vs_quartz
                 {
                     Console.Out.WriteLine("Hello QuartzNet...");
                     if (Interlocked.Increment(ref Program.IdleSchedulerRunTimes) == 50_0000)
+                    {
                         Console.Out.WriteLine($"IdleScheduler 执行 50w 个任务，耗时：{DateTime.Now.Subtract(Program.IdleSchedulerRunStartTime).TotalMilliseconds}ms");
+                        _idleScheduler.Dispose();
+                    }
                 });
                 //_idleScheduler.AddTask($"ajob{a}", $"group{a}", 1, 10);
             }
@@ -45,13 +48,16 @@ namespace Examples_vs_quartz
 
         #region Quartz
         static ISchedulerFactory _quartzfactory;
-        static IScheduler _quartzScheduler;
+        static IScheduler _quartzScheduler; 
+        static DateTime QuartzSchedulerRunStartTime;
+        static long QuartzSchedulerRunTimes;
         static async Task QuartzSchedulerRun()
         {
             // 创建作业调度池
             _quartzfactory = new StdSchedulerFactory();
             _quartzScheduler = await _quartzfactory.GetScheduler();
-
+            QuartzSchedulerRunStartTime = DateTime.Now;
+            QuartzSchedulerRunTimes = 0;
             for (var a = 0; a < 50_0000; a++)
             {
                 // 创建作业
@@ -82,6 +88,11 @@ namespace Examples_vs_quartz
             async public Task Execute(IJobExecutionContext context)
             {
                 await Console.Out.WriteLineAsync("Hello QuartzNet...");
+                if (Interlocked.Increment(ref Program.QuartzSchedulerRunTimes) == 50_0000)
+                {
+                    Console.Out.WriteLine($"Quartz 执行 50w 个任务，耗时：{DateTime.Now.Subtract(Program.QuartzSchedulerRunStartTime).TotalMilliseconds}ms");
+                    await _quartzScheduler.Clear();
+                }
             }
         }
         #endregion
@@ -126,7 +137,10 @@ namespace Examples_vs_quartz
             {
                 Console.Out.WriteLine("Hello QuartzNet...");
                 if (Interlocked.Increment(ref Program.HashedWheelTimerRunTimes) == 50_0000)
+                {
                     Console.Out.WriteLine($"HashedWheelTimer 执行 50w 个任务，耗时：{DateTime.Now.Subtract(Program.HashedWheelTimerRunStartTime).TotalMilliseconds}ms");
+                    timer.Stop();
+                }
             }
         }
         #endregion

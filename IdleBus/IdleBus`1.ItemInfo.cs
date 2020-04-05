@@ -17,7 +17,6 @@ partial class IdleBus<T>
         internal DateTime createTime;
         internal DateTime lastActiveTime;
         internal long activeCounter;
-        internal int idleCounter;
         internal int releaseErrorCounter;
 
         internal T value { get; private set; }
@@ -58,7 +57,6 @@ partial class IdleBus<T>
             }
             lastActiveTime = DateTime.Now;
             Interlocked.Increment(ref activeCounter);
-            Interlocked.Exchange(ref idleCounter, 0);
             return value;
         }
 
