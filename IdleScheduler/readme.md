@@ -16,11 +16,12 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 ## Performance
 
-| 500,000 Tasks | IdleSchduler | Quartz.net | FluentScheduler | HashedWheelTimer |
-| -- | -- | -- | -- | -- |
-| | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_hashedwheeltimer.png?raw=true"/> |
-| 内存 | 383M | 1700+M | StackOverflow | 213M |
-| 耗时 | 70563.6066ms | 50692.5365ms | 未知 | 33697.8758ms |
+| IdleSchduler | Quartz.net | FluentScheduler | HashedWheelTimer |
+| -- | -- | -- | -- |
+| (500,000 Tasks) | (500,000 Tasks) | (500,000 Tasks) | (500,000 Tasks) |
+| <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_hashedwheeltimer.png?raw=true"/> |
+| 383M | 1700+M | StackOverflow | 213M |
+| 70563.6066ms | 50692.5365ms | 未知 | 33697.8758ms |
 
 > FluentScheduler 单个 Registry 测试正常，但目测单线程执行(间隔1-10ms)，处理速度不理想 [View Code](https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/Program.cs)
 
