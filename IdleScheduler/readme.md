@@ -1,4 +1,4 @@
-IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时的延时任务和重复循环任务(可落地保存)，可按秒，每天固定时间，每周固定时间，每月固定时间执行。
+IdleScheduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时的延时任务和重复循环任务(可落地保存)，可按秒，每天固定时间，每周固定时间，每月固定时间执行。
 
 ## API
 
@@ -16,7 +16,7 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 ## Performance
 
-| IdleSchduler | Quartz.net | FluentScheduler | HashedWheelTimer |
+| IdleScheduler | Quartz.net | FluentScheduler | HashedWheelTimer |
 | -- | -- | -- | -- |
 | (500,000 Tasks + 10s) | (500,000 Tasks + 10s) | (500,000 Tasks + 10s) | (500,000 Tasks + 10s) |
 | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_self.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_quartz.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_fluentscheduler.png?raw=true"/> | <img src="https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/performance_hashedwheeltimer.png?raw=true"/> |
@@ -25,7 +25,7 @@ IdleSchduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时�
 
 > FluentScheduler 单个 Registry 测试正常，但目测单线程执行(间隔1-10ms)，处理速度不理想 [View Code](https://github.com/2881099/IdleBus/blob/master/Examples/Examples_IdleScheduler_VsQuartz/Program.cs)
 
-> 我尝试把内核改成 HashedWheelTimer 后内存占用更高(600兆)，结论：IdleSheduler 功能比它多需要占用更多资源
+> 我尝试把 IdleScheduler 内核改成 HashedWheelTimer 内存占用更高(600兆)，结论：IdleScheduler 功能需要占用更多资源
 
 ## Quick start
 
