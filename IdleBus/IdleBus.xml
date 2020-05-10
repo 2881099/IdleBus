@@ -36,7 +36,23 @@
             </summary>
             <param name="idle">空闲时间</param>
         </member>
-        <member name="M:IdleBus`1.Get(System.String)">
+        <member name="T:IdleBus`2">
+            <summary>
+            空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
+            </summary>
+        </member>
+        <member name="M:IdleBus`2.#ctor">
+            <summary>
+            按空闲时间1分钟，创建空闲容器
+            </summary>
+        </member>
+        <member name="M:IdleBus`2.#ctor(System.TimeSpan)">
+            <summary>
+            指定空闲时间、创建空闲容器
+            </summary>
+            <param name="idle">空闲时间</param>
+        </member>
+        <member name="M:IdleBus`2.Get(`0)">
             <summary>
             根据 key 获得或创建【实例】（线程安全）<para></para>
             key 未注册时，抛出异常
@@ -44,14 +60,14 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:IdleBus`1.Exists(System.String)">
+        <member name="M:IdleBus`2.Exists(`0)">
             <summary>
             判断 key 是否注册
             </summary>
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:IdleBus`1.Register(System.String,System.Func{`0})">
+        <member name="M:IdleBus`2.Register(`0,System.Func{`1})">
             <summary>
             注册【实例】
             </summary>
@@ -59,68 +75,68 @@
             <param name="create">实例创建方法</param>
             <returns></returns>
         </member>
-        <member name="P:IdleBus`1.UsageQuantity">
+        <member name="P:IdleBus`2.UsageQuantity">
             <summary>
             已创建【实例】数量
             </summary>
         </member>
-        <member name="P:IdleBus`1.Quantity">
+        <member name="P:IdleBus`2.Quantity">
             <summary>
             注册数量
             </summary>
         </member>
-        <member name="E:IdleBus`1.Notice">
+        <member name="E:IdleBus`2.Notice">
             <summary>
             通知事件
             </summary>
         </member>
-        <member name="F:IdleBus`1.NoticeType.Register">
+        <member name="F:IdleBus`2.NoticeType.Register">
             <summary>
             执行 Register 方法的时候
             </summary>
         </member>
-        <member name="F:IdleBus`1.NoticeType.Remove">
+        <member name="F:IdleBus`2.NoticeType.Remove">
             <summary>
             执行 Remove 方法的时候，注意：实际会延时释放【实例】
             </summary>
         </member>
-        <member name="F:IdleBus`1.NoticeType.AutoCreate">
+        <member name="F:IdleBus`2.NoticeType.AutoCreate">
             <summary>
             自动创建【实例】的时候
             </summary>
         </member>
-        <member name="F:IdleBus`1.NoticeType.AutoRelease">
+        <member name="F:IdleBus`2.NoticeType.AutoRelease">
             <summary>
             自动释放不活跃【实例】的时候
             </summary>
         </member>
-        <member name="F:IdleBus`1.NoticeType.Get">
+        <member name="F:IdleBus`2.NoticeType.Get">
             <summary>
             获取【实例】的时候
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.Interval">
+        <member name="P:IdleBus`2.TimeoutScanOptions.Interval">
             <summary>
             扫描线程间隔（默认值：2秒）
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.QuitWaitSeconds">
+        <member name="P:IdleBus`2.TimeoutScanOptions.QuitWaitSeconds">
             <summary>
             扫描线程空闲多少秒退出（默认值：10秒）
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantity">
+        <member name="P:IdleBus`2.TimeoutScanOptions.BatchQuantity">
             <summary>
             扫描的每批数量（默认值：512）<para></para>
             可防止注册数量太多时导致 CPU 占用过高
             </summary>
         </member>
-        <member name="P:IdleBus`1.TimeoutScanOptions.BatchQuantityWait">
+        <member name="P:IdleBus`2.TimeoutScanOptions.BatchQuantityWait">
             <summary>
             达到扫描的每批数量时，线程等待（默认值：1秒）
             </summary>
         </member>
-        <member name="P:IdleBus`1.ScanOptions">
+        <member name="P:IdleBus`2.ScanOptions">
             <summary>
             扫描过期对象的设置<para></para>
             机制：当窗口里有存活对象时，扫描线程才会开启（只开启一个线程）。<para></para>

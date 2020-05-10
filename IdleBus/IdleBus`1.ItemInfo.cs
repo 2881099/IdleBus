@@ -5,24 +5,24 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-partial class IdleBus<T>
+partial class IdleBus<TKey, TValue>
 {
 
     class ItemInfo : IDisposable
     {
-        internal IdleBus<T> ib;
-        internal string key;
-        internal Func<T> create;
+        internal IdleBus<TKey, TValue> ib;
+        internal TKey key;
+        internal Func<TValue> create;
         internal TimeSpan idle;
         internal DateTime createTime;
         internal DateTime lastActiveTime;
         internal long activeCounter;
         internal int releaseErrorCounter;
 
-        internal T value { get; private set; }
+        internal TValue value { get; private set; }
         object valueLock = new object();
 
-        internal T GetOrCreate()
+        internal TValue GetOrCreate()
         {
             if (isdisposed == true) return null;
             if (value == null)

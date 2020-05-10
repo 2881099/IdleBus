@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-partial class IdleBus<T>
+partial class IdleBus<TKey, TValue>
 {
 
     public enum NoticeType

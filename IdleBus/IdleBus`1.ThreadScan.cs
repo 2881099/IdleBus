@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-partial class IdleBus<T>
+partial class IdleBus<TKey, TValue>
 {
     bool _threadStarted = false;
     object _threadStartedLock = new object();

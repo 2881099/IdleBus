@@ -8,10 +8,10 @@ using System.Threading;
 /// <summary>
 /// 空闲对象容器管理，可实现自动创建、销毁、扩张收缩，解决【实例】长时间占用问题
 /// </summary>
-public partial class IdleBus<T> : IDisposable where T : class, IDisposable
+public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, IDisposable
 {
 
-    ConcurrentDictionary<string, ItemInfo> _dic;
+    ConcurrentDictionary<TKey, ItemInfo> _dic;
     ConcurrentDictionary<string, ItemInfo> _removePending;
     object _usageLock = new object();
     int _usageQuantity;
@@ -28,7 +28,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// <param name="idle">空闲时间</param>
     public IdleBus(TimeSpan idle)
     {
-        _dic = new ConcurrentDictionary<string, ItemInfo>();
+        _dic = new ConcurrentDictionary<TKey, ItemInfo>();
         _removePending = new ConcurrentDictionary<string, ItemInfo>();
         _usageQuantity = 0;
         _defaultIdle = idle;
@@ -40,9 +40,9 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get(string key)
+    public TValue Get(TKey key)
     {
-        if (isdisposed) throw new Exception($"{key} 实例获取失败，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 实例获取失败，{nameof(IdleBus<TValue>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
             var error = new Exception($"{key} 实例获取失败，因为没有注册");
@@ -64,7 +64,7 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public bool Exists(string key) => _dic.ContainsKey(key);
+    public bool Exists(TKey key) => _dic.ContainsKey(key);
 
     /// <summary>
     /// 注册【实例】
@@ -72,20 +72,20 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// <param name="key"></param>
     /// <param name="create">实例创建方法</param>
     /// <returns></returns>
-    public IdleBus<T> Register(string key, Func<T> create)
+    public IdleBus<TKey, TValue> Register(TKey key, Func<TValue> create)
     {
         InternalRegister(key, create, null, true);
         return this;
     }
-    public IdleBus<T> Register(string key, Func<T> create, TimeSpan idle)
+    public IdleBus<TKey, TValue> Register(TKey key, Func<TValue> create, TimeSpan idle)
     {
         InternalRegister(key, create, idle, true);
         return this;
     }
-    public bool TryRegister(string key, Func<T> create) => InternalRegister(key, create, null, false);
-    public bool TryRegister(string key, Func<T> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
+    public bool TryRegister(TKey key, Func<TValue> create) => InternalRegister(key, create, null, false);
+    public bool TryRegister(TKey key, Func<TValue> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
 
-    public bool TryRemove(string key) => InternalRemove(key, false);
+    public bool TryRemove(TKey key) => InternalRemove(key, false);
 
     /// <summary>
     /// 已创建【实例】数量
@@ -100,9 +100,9 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
     /// </summary>
     public event EventHandler<NoticeEventArgs> Notice;
 
-    bool InternalRegister(string key, Func<T> create, TimeSpan? idle, bool isThrow)
+    bool InternalRegister(TKey key, Func<TValue> create, TimeSpan? idle, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 注册失败，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 注册失败，{nameof(IdleBus<TValue>)} 对象已释放");
         var error = new Exception($"{key} 注册失败，请勿重复注册");
         if (_dic.ContainsKey(key))
         {
@@ -135,9 +135,9 @@ public partial class IdleBus<T> : IDisposable where T : class, IDisposable
         this.OnNotice(new NoticeEventArgs(NoticeType.Register, key, null, $"{key} 注册成功，{_usageQuantity}/{Quantity}"));
         return true;
     }
-    bool InternalRemove(string key, bool isThrow)
+    bool InternalRemove(TKey key, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<T>)} 对象已释放");
+        if (isdisposed) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<TValue>)} 对象已释放");
         if (_dic.TryRemove(key, out var item) == false)
         {
             var error = new Exception($"{key} 删除失败 ，因为没有注册");

@@ -5,18 +5,18 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-partial class IdleBus<T>
+partial class IdleBus<TKey, TValue>
 {
 
     public class NoticeEventArgs : EventArgs
     {
 
         public NoticeType NoticeType { get; }
-        public string Key { get; }
+        public TKey Key { get; }
         public Exception Exception { get; }
         public string Log { get; }
 
-        public NoticeEventArgs(NoticeType noticeType, string key, Exception exception, string log)
+        public NoticeEventArgs(NoticeType noticeType, TKey key, Exception exception, string log)
         {
             this.NoticeType = noticeType;
             this.Key = key;
