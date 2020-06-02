@@ -20,7 +20,7 @@ namespace IdleScheduler
 		/// </summary>
 		public string Body { get; set; }
 		/// <summary>
-		/// 任务执行多少轮
+		/// 任务执行多少轮，-1为永久循环
 		/// </summary>
 		public int Round { get; set; }
 		/// <summary>

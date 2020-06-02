@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace IdleScheduler
 {
@@ -113,7 +114,7 @@ namespace IdleScheduler
 		/// </summary>
 		/// <param name="topic">名称</param>
 		/// <param name="body">数据</param>
-		/// <param name="round">循环次数</param>
+		/// <param name="round">循环次数，-1为永久循环</param>
 		/// <param name="seconds">秒数</param>
 		/// <returns></returns>
 		public string AddTask(string topic, string body, int round, int seconds) => AddTaskPriv(topic, body, round, TaskInterval.SEC, string.Concat(seconds));
@@ -152,14 +153,14 @@ namespace IdleScheduler
 		}
 		void AddTaskPriv(TaskInfo task, bool isSave)
 		{
-			if (task.CurrentRound >= task.Round) return;
+			if (task.Round != -1 && task.CurrentRound >= task.Round) return;
 			IdleTimeout bus = null;
 			bus = new IdleTimeout(() =>
 			{
 				if (_ib.TryRemove(task.Id) == false) return;
 				var currentRound = task.IncrementCurrentRound();
 				var round = task.Round;
-				if (currentRound >= round)
+				if (round != -1 && currentRound >= round)
 				{
 					if (_tasks.TryRemove(task.Id, out var old))
 						Interlocked.Decrement(ref _quantityTask);
@@ -190,7 +191,7 @@ namespace IdleScheduler
 						task.LastRunTime = DateTime.UtcNow;
 						_taskHandler.OnExecuted(this, task, result);
 					}
-					if (currentRound < round)
+					if (round == -1 || currentRound < round)
 						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
 							_ib.Get(task.Id);
 				});
@@ -234,5 +235,12 @@ namespace IdleScheduler
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public bool ExistsTask(string id) => _tasks.ContainsKey(id);
+
+		/// <summary>
+		/// 查询正在运行中的循环任务
+		/// </summary>
+		/// <param name="where"></param>
+		/// <returns></returns>
+		public TaskInfo[] FindTask(Func<TaskInfo, bool> where) => _tasks.Values.Where(where).ToArray();
 	}
 }

@@ -41,6 +41,7 @@ namespace Examples_IdleScheduler_Core31
 
                 //循环任务，执行10次，每次间隔10秒
                 scheduler.AddTask(topic: "test001", body: "data1", round: 10, seconds: 10);
+                scheduler.AddTask(topic: "test002", body: "data2", round: -1, seconds: 10);
             }
             var dtts = DateTime.Now.Subtract(dt).TotalMilliseconds;
             Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] 注册耗时 {dtts}ms，共计 {scheduler.QuantityTempTask} 个临时任务，{scheduler.QuantityTask} 个循环任务");

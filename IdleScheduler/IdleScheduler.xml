@@ -73,7 +73,7 @@
         </member>
         <member name="P:IdleScheduler.TaskInfo.Round">
             <summary>
-            任务执行多少轮
+            任务执行多少轮，-1为永久循环
             </summary>
         </member>
         <member name="P:IdleScheduler.TaskInfo.Interval">
@@ -210,7 +210,7 @@
             </summary>
             <param name="topic">名称</param>
             <param name="body">数据</param>
-            <param name="round">循环次数</param>
+            <param name="round">循环次数，-1为永久循环</param>
             <param name="seconds">秒数</param>
             <returns></returns>
         </member>
@@ -244,6 +244,13 @@
             判断循环任务是否存在
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.FindTask(System.Func{IdleScheduler.TaskInfo,System.Boolean})">
+            <summary>
+            查询正在运行中的循环任务
+            </summary>
+            <param name="where"></param>
             <returns></returns>
         </member>
     </members>

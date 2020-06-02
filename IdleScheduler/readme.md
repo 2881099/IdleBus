@@ -11,6 +11,7 @@ IdleScheduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时
 | bool RemoveTempTask(string id) | 删除任务(临时任务) |
 | bool ExistsTask(string id) | 判断任务是否存在(循环定时任务) |
 | bool ExistsTempTask(string id) | 判断任务是否存在(临时任务) |
+| TaskInfo[] FindTask(lambda) | 查询正在运行中的任务(循环定时任务) |
 | int QuantityTask | 任务数量(循环定时任务) |
 | int QuantityTempTask | 任务数量(临时任务) |
 
