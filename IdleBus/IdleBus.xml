@@ -60,6 +60,12 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="M:IdleBus`2.GetAll">
+            <summary>
+            获得或创建所有【实例】（线程安全）
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:IdleBus`2.Exists(`0)">
             <summary>
             判断 key 是否注册

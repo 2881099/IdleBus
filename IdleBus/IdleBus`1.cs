@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -58,6 +59,12 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
         this.ThreadScanWatch(item); //这种在后台扫描 _dic，定时要求可能没那么及时
         return ret;
     }
+
+    /// <summary>
+    /// 获得或创建所有【实例】（线程安全）
+    /// </summary>
+    /// <returns></returns>
+    public List<TValue> GetAll() => _dic.Keys.ToArray().Select(a => Get(a)).ToList();
 
     /// <summary>
     /// 判断 key 是否注册
