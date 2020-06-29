@@ -28,7 +28,7 @@ namespace IdleScheduler.TaskHandlers
             _fsql.CodeFirst.SyncStructure<TaskLog>();
         }
 
-        public IEnumerable<TaskInfo> LoadAll() => _fsql.Select<TaskInfo>().Where(a => a.CurrentRound < a.Round).ToList();
+        public IEnumerable<TaskInfo> LoadAll() => _fsql.Select<TaskInfo>().Where(a => a.Round < 0 || a.CurrentRound < a.Round).ToList();
         public void OnAdd(TaskInfo task) => _fsql.Insert<TaskInfo>().NoneParameter().AppendData(task).ExecuteAffrows();
         public void OnRemove(TaskInfo task) => _fsql.Delete<TaskInfo>().Where(a => a.Id == task.Id).ExecuteAffrows();
         public void OnExecuted(Scheduler scheduler, TaskInfo task, TaskLog result)
