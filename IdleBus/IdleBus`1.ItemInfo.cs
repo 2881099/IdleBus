@@ -20,6 +20,8 @@ partial class IdleBus<TKey, TValue>
         internal int releaseErrorCounter;
 
         internal TValue value { get; private set; }
+        internal TValue firstValue { get; private set; }
+        internal bool IsRegisterError { get; private set; }
         object valueLock = new object();
 
         internal TValue GetOrCreate()
@@ -47,7 +49,14 @@ partial class IdleBus<TKey, TValue>
                         }
                     }
                     if (iscreate)
+                    {
+                        if (value != null)
+                        {
+                            if (firstValue == null) firstValue = value; //记录首次值
+                            else if (firstValue == value) IsRegisterError = true; //第二次与首次相等，注册姿势错误
+                        }
                         ib.OnNotice(new NoticeEventArgs(NoticeType.AutoCreate, key, null, $"{key} 实例+++创建成功，耗时 {DateTime.Now.Subtract(now).TotalMilliseconds}ms，{ib._usageQuantity}/{ib.Quantity}"));
+                    }
                 }
                 catch (Exception ex)
                 {

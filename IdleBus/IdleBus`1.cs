@@ -53,6 +53,11 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
 
         var now = DateTime.Now;
         var ret = item.GetOrCreate();
+        if (item.IsRegisterError)
+        {
+            this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, null, $"{key} 实例获取失败：检测到注册实例的参数 create 返回了相同的实例，应该每次返回新实例，正确：() => new Xxx()，错误：() => 变量"));
+            throw new ArgumentException($"{key} 实例获取失败：检测到注册实例的参数 create 返回了相同的实例，应该每次返回新实例，正确：() => new Xxx()，错误：() => 变量");
+        }
         var tsms = DateTime.Now.Subtract(now).TotalMilliseconds;
         this.OnNotice(new NoticeEventArgs(NoticeType.Get, key, null, $"{key} 实例获取成功 {item.activeCounter}次{(tsms > 5 ? $"，耗时 {tsms}ms" : "")}"));
         //this.ThreadLiveWatch(item); //这种模式采用 Sorted 性能会比较慢
