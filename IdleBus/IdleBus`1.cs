@@ -72,6 +72,16 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
     public List<TValue> GetAll() => _dic.Keys.ToArray().Select(a => Get(a)).ToList();
 
     /// <summary>
+    /// 获得所有已注册的 key（线程安全）
+    /// </summary>
+    /// <returns></returns>
+    public TKey[] GetKeys(Func<TValue, bool> filter = null)
+    {
+        if (filter == null) return _dic.Keys.ToArray();
+        return _dic.Keys.ToArray().Where(key => _dic.TryGetValue(key, out var item) && filter(item.value)).ToArray();
+    }
+
+    /// <summary>
     /// 判断 key 是否注册
     /// </summary>
     /// <param name="key"></param>

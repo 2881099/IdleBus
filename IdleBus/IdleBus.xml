@@ -66,6 +66,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:IdleBus`2.GetKeys(System.Func{`1,System.Boolean})">
+            <summary>
+            获得所有已注册的 key（线程安全）
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:IdleBus`2.Exists(`0)">
             <summary>
             判断 key 是否注册
