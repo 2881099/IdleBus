@@ -80,6 +80,7 @@ namespace IdleScheduler
 			var id = Guid.NewGuid().ToString();
 			var bus = new IdleTimeout(() =>
 			{
+				if (isdisposed) return;
 				_ib.TryRemove(id);
 				Interlocked.Decrement(ref _quantityTempTask);
 				if (handle != null)

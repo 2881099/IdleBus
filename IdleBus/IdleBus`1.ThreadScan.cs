@@ -113,7 +113,7 @@ partial class IdleBus<TKey, TValue>
             Thread.CurrentThread.Join(TimeSpan.FromSeconds(1));
             if (isdisposed) return false;
         }
-        for (var a = 0; a < milliseconds; a+= 200)
+        for (var a = 0; a < milliseconds; a += 200)
         {
             Thread.CurrentThread.Join(TimeSpan.FromMilliseconds(200));
             if (isdisposed) return false;

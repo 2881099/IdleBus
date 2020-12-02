@@ -21,7 +21,7 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
     /// <summary>
     /// 按空闲时间1分钟，创建空闲容器
     /// </summary>
-    public IdleBus() : this(TimeSpan.FromMinutes(1)) {}
+    public IdleBus() : this(TimeSpan.FromMinutes(1)) { }
 
     /// <summary>
     /// 指定空闲时间、创建空闲容器
@@ -107,7 +107,7 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
     public bool TryRegister(TKey key, Func<TValue> create) => InternalRegister(key, create, null, false);
     public bool TryRegister(TKey key, Func<TValue> create, TimeSpan idle) => InternalRegister(key, create, idle, false);
 
-    public bool TryRemove(TKey key) => InternalRemove(key, false);
+    public bool TryRemove(TKey key, bool now = false) => InternalRemove(key, now, false);
 
     /// <summary>
     /// 已创建【实例】数量
@@ -157,7 +157,7 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
         this.OnNotice(new NoticeEventArgs(NoticeType.Register, key, null, $"{key} 注册成功，{_usageQuantity}/{Quantity}"));
         return true;
     }
-    bool InternalRemove(TKey key, bool isThrow)
+    bool InternalRemove(TKey key, bool isNow, bool isThrow)
     {
         if (isdisposed) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<TValue>)} 对象已释放");
         if (_dic.TryRemove(key, out var item) == false)
@@ -169,6 +169,13 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
         }
 
         Interlocked.Exchange(ref item.releaseErrorCounter, 0);
+        if (isNow)
+        {
+            item.Release(() => true);
+            this.OnNotice(new NoticeEventArgs(NoticeType.Remove, item.key, null, $"{key} 删除成功，{_usageQuantity}/{Quantity}"));
+            return true;
+        }
+
         item.lastActiveTime = DateTime.Now;
         if (item.value == null) item.lastActiveTime = DateTime.Now.Subtract(item.idle).AddSeconds(-60); //延时删除
         _removePending.TryAdd(Guid.NewGuid().ToString(), item);
@@ -201,8 +208,7 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
 
     void OnNotice(NoticeEventArgs e)
     {
-        if (this.Notice != null) this.Notice(this, e);
-        else Trace.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] 线程{Thread.CurrentThread.ManagedThreadId}：{e.Log}");
+        this.Notice?.Invoke(this, e);
     }
 
     #region Dispose
