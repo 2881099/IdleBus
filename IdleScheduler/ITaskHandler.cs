@@ -11,6 +11,12 @@ namespace IdleScheduler
 		/// </summary>
 		/// <returns></returns>
 		IEnumerable<TaskInfo> LoadAll();
+		/// <summary>
+		/// 加载单个任务（从持久化中加载）
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		TaskInfo Load(string id);
 
 		/// <summary>
 		/// 添加任务的时候触发（持久化）

@@ -29,6 +29,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:IdleScheduler.ITaskHandler.Load(System.String)">
+            <summary>
+            加载单个任务（从持久化中加载）
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:IdleScheduler.ITaskHandler.OnAdd(IdleScheduler.TaskInfo)">
             <summary>
             添加任务的时候触发（持久化）
@@ -83,7 +90,12 @@
         </member>
         <member name="P:IdleScheduler.TaskInfo.IntervalArgument">
             <summary>
-            定时参数值
+            定时参数值<para></para>
+            Interval SEC 可设置参数值 10,20,30 分别对每一轮进行设置定时秒数，例如：<para></para>
+            Round = 12<para></para>
+            Interval = SEC<para></para>
+            Argument = 60,60,60,60,60,120,120,120,120,120,1200,1200<para></para>
+            Executing 事件可设置 Status 状态，在任意一轮中标记任务【完成】
             </summary>
         </member>
         <member name="P:IdleScheduler.TaskInfo.CreateTime">
@@ -104,6 +116,11 @@
         <member name="P:IdleScheduler.TaskInfo.ErrorTimes">
             <summary>
             错次数
+            </summary>
+        </member>
+        <member name="P:IdleScheduler.TaskInfo.Status">
+            <summary>
+            任务状态
             </summary>
         </member>
         <member name="F:IdleScheduler.TaskInterval.SEC">
@@ -167,6 +184,21 @@
             创建时间
             </summary>
         </member>
+        <member name="F:IdleScheduler.TaskStatus.Running">
+            <summary>
+            正在运行
+            </summary>
+        </member>
+        <member name="F:IdleScheduler.TaskStatus.Paused">
+            <summary>
+            暂停，可恢复为 Running
+            </summary>
+        </member>
+        <member name="F:IdleScheduler.TaskStatus.Completed">
+            <summary>
+            完成
+            </summary>
+        </member>
         <member name="T:IdleScheduler.Scheduler">
             <summary>
             调度管理临时任务(一次性)、循环任务(存储落地)
@@ -206,12 +238,26 @@
         </member>
         <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.Int32,System.Int32)">
             <summary>
-            添加循环执行的任务
+            添加循环执行的任务（秒）
             </summary>
             <param name="topic">名称</param>
             <param name="body">数据</param>
             <param name="round">循环次数，-1为永久循环</param>
             <param name="seconds">秒数</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.Int32,System.Int32[])">
+            <summary>
+            添加循环执行的任务（秒）<para></para>
+            可设置参数值 10,20,30 分别对每一轮进行设置定时秒数，例如：<para></para>
+            round = 12<para></para>
+            seconds = 60,60,60,60,60,120,120,120,120,120,1200,1200<para></para>
+            Executing 事件可设置 Status 状态，在任意一轮中标记任务【完成】
+            </summary>
+            <param name="topic">名称</param>
+            <param name="body">数据</param>
+            <param name="round">循环次数，-1为永久循环</param>
+            <param name="seconds">每一轮的定时秒数：10,20,30</param>
             <returns></returns>
         </member>
         <member name="M:IdleScheduler.Scheduler.AddTaskRunOnDay(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -251,6 +297,20 @@
             查询正在运行中的循环任务
             </summary>
             <param name="where"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.ResumeTask(System.String)">
+            <summary>
+            恢复已暂停的任务
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.PauseTask(System.String)">
+            <summary>
+            暂停正在运行的任务
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
     </members>

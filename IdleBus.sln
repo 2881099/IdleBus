@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29609.76
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdleBus", "IdleBus\IdleBus.csproj", "{AB044BE0-8676-481F-A454-3AD68B8BBE54}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples_IdleBus_Quickstart", "Examples\Examples_IdleBus_Quickstart\Examples_IdleBus_Quickstart.csproj", "{D359491B-5B34-408F-84A1-A3646A74BF54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples_IdleScheduler_VsQuartz", "Examples\Examples_IdleScheduler_VsQuartz\Examples_IdleScheduler_VsQuartz.csproj", "{2E6CD7FE-68F9-4ADB-BA08-CA8B630450CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples_IdleScheduler_WinformNet40", "Examples\Examples_IdleScheduler_WinformNet40\Examples_IdleScheduler_WinformNet40.csproj", "{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +60,10 @@ Global
 		{2E6CD7FE-68F9-4ADB-BA08-CA8B630450CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E6CD7FE-68F9-4ADB-BA08-CA8B630450CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E6CD7FE-68F9-4ADB-BA08-CA8B630450CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{39709BE5-B667-44E8-94C3-1BF084D79E2A} = {0832562A-80F3-4513-AC2F-4B4DFBB04F57}
 		{D359491B-5B34-408F-84A1-A3646A74BF54} = {0832562A-80F3-4513-AC2F-4B4DFBB04F57}
 		{2E6CD7FE-68F9-4ADB-BA08-CA8B630450CF} = {0832562A-80F3-4513-AC2F-4B4DFBB04F57}
+		{10CF7100-3DB2-49E9-B080-8CF7E8B89F6A} = {0832562A-80F3-4513-AC2F-4B4DFBB04F57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23CB00AF-59EE-4479-A279-0A3AECA31FF5}

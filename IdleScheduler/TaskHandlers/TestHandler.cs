@@ -7,6 +7,7 @@ namespace IdleScheduler.TaskHandlers
     public class TestHandler : ITaskHandler
     {
         public IEnumerable<TaskInfo> LoadAll() => new TaskInfo[0];
+        public TaskInfo Load(string id) => null;
         public void OnAdd(TaskInfo task) { }
         public void OnRemove(TaskInfo task) { }
         public virtual void OnExecuted(Scheduler scheduler, TaskInfo task, TaskLog result) { }

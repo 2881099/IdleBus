@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace IdleScheduler
 {
-	public class TaskInfo
+    public class TaskInfo
 	{
 		/// <summary>
 		/// 任务编号
@@ -30,7 +29,11 @@ namespace IdleScheduler
 		public TaskInterval Interval { get; set; }
 		/// <summary>
 		/// 定时参数值<para></para>
-		/// Interval SEC 可设置参数值 10,20,30 分别对每一轮进行设置定时秒数
+		/// Interval SEC 可设置参数值 10,20,30 分别对每一轮进行设置定时秒数，例如：<para></para>
+		/// Round = 12<para></para>
+		/// Interval = SEC<para></para>
+		/// Argument = 60,60,60,60,60,120,120,120,120,120,1200,1200<para></para>
+		/// Executing 事件可设置 Status 状态，在任意一轮中标记任务【完成】
 		/// </summary>
 		public string IntervalArgument { get; set; }
 		/// <summary>
@@ -51,6 +54,11 @@ namespace IdleScheduler
 		/// 错次数
 		/// </summary>
 		public int ErrorTimes { get => _errorTimes; set => _errorTimes = value; }
+
+		/// <summary>
+		/// 任务状态
+		/// </summary>
+		public TaskStatus Status { get; set; }
 
 		internal int IncrementCurrentRound() => Interlocked.Increment(ref _currentRound);
 		internal int IncrementErrorTimes() => Interlocked.Increment(ref _errorTimes);

@@ -111,7 +111,7 @@ namespace IdleScheduler
 		public bool ExistsTempTask(string id) => _tasks.ContainsKey(id) == false && _ib.Exists(id);
 
 		/// <summary>
-		/// 添加循环执行的任务
+		/// 添加循环执行的任务（秒）
 		/// </summary>
 		/// <param name="topic">名称</param>
 		/// <param name="body">数据</param>
@@ -119,6 +119,19 @@ namespace IdleScheduler
 		/// <param name="seconds">秒数</param>
 		/// <returns></returns>
 		public string AddTask(string topic, string body, int round, int seconds) => AddTaskPriv(topic, body, round, TaskInterval.SEC, string.Concat(seconds));
+		/// <summary>
+		/// 添加循环执行的任务（秒）<para></para>
+		/// 可设置参数值 10,20,30 分别对每一轮进行设置定时秒数，例如：<para></para>
+		/// round = 12<para></para>
+		/// seconds = 60,60,60,60,60,120,120,120,120,120,1200,1200<para></para>
+		/// Executing 事件可设置 Status 状态，在任意一轮中标记任务【完成】
+		/// </summary>
+		/// <param name="topic">名称</param>
+		/// <param name="body">数据</param>
+		/// <param name="round">循环次数，-1为永久循环</param>
+		/// <param name="seconds">每一轮的定时秒数：10,20,30</param>
+		/// <returns></returns>
+		public string AddTask(string topic, string body, int round, int[] seconds) => AddTaskPriv(topic, body, round, TaskInterval.SEC, string.Join(",", seconds));
 		/// <summary>
 		/// 添加循环执行的任务（每天的什么时候执行）
 		/// </summary>
@@ -147,13 +160,15 @@ namespace IdleScheduler
 				IntervalArgument = intervalArgument,
 				CurrentRound = 0,
 				ErrorTimes = 0,
-				LastRunTime = new DateTime(1970, 1, 1)
+				LastRunTime = new DateTime(1970, 1, 1),
+				Status = TaskStatus.Running
 			};
 			AddTaskPriv(task, true);
 			return task.Id;
 		}
 		void AddTaskPriv(TaskInfo task, bool isSave)
 		{
+			if (task.Status != TaskStatus.Running) return;
 			if (task.Round != -1 && task.CurrentRound >= task.Round) return;
 			IdleTimeout bus = null;
 			bus = new IdleTimeout(() =>
@@ -161,6 +176,7 @@ namespace IdleScheduler
 				if (_ib.TryRemove(task.Id) == false) return;
 				var currentRound = task.IncrementCurrentRound();
 				var round = task.Round;
+				if (task.Status != TaskStatus.Running) return;
 				if (round != -1 && currentRound >= round)
 				{
 					if (_tasks.TryRemove(task.Id, out var old))
@@ -176,6 +192,7 @@ namespace IdleScheduler
 						Success = true
 					};
 					var startdt = DateTime.UtcNow;
+					var status = task.Status;
 					try
 					{
 						_taskHandler.OnExecuting(this, task);
@@ -188,12 +205,15 @@ namespace IdleScheduler
 					}
 					finally
 					{
+						if (status != task.Status) result.Remark = $"[Executing] 任务状态 `{status}` 已转为 `{task.Status}`";
 						result.ElapsedMilliseconds = (long)DateTime.UtcNow.Subtract(startdt).TotalMilliseconds;
 						task.LastRunTime = DateTime.UtcNow;
+						if (round != -1 && currentRound >= round) task.Status = TaskStatus.Completed;
 						_taskHandler.OnExecuted(this, task, result);
 					}
+					if (task.Status != TaskStatus.Running) return;
 					if (round == -1 || currentRound < round)
-						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
+						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval(currentRound)))
 							_ib.Get(task.Id);
 				});
 			});
@@ -212,7 +232,7 @@ namespace IdleScheduler
 					}
 				}
 				Interlocked.Increment(ref _quantityTask);
-				if (_ib.TryRegister(task.Id, () => bus, task.GetInterval()))
+				if (_ib.TryRegister(task.Id, () => bus, task.GetInterval(task.CurrentRound)))
 					_ib.Get(task.Id);
 			}
 		}
@@ -243,5 +263,54 @@ namespace IdleScheduler
 		/// <param name="where"></param>
 		/// <returns></returns>
 		public TaskInfo[] FindTask(Func<TaskInfo, bool> where) => _tasks.Values.Where(where).ToArray();
+
+		/// <summary>
+		/// 恢复已暂停的任务
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool ResumeTask(string id)
+        {
+			var task = _taskHandler.Load(id);
+			if (task == null) return false;
+			if (task.Status != TaskStatus.Paused) return false;
+			var status = task.Status;
+			task.Status = TaskStatus.Running;
+			var result = new TaskLog
+			{
+				CreateTime = DateTime.UtcNow,
+				TaskId = task.Id,
+				Round = task.CurrentRound,
+				Success = true,
+				Remark = $"[ResumeTask] 任务状态 `{status}` 已转为 `{task.Status}`"
+			};
+			_taskHandler.OnExecuted(this, task, result);
+			AddTaskPriv(task, false);
+			return true;
+		}
+		/// <summary>
+		/// 暂停正在运行的任务
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool PauseTask(string id)
+        {
+			if (_tasks.TryRemove(id, out var task))
+			{
+				Interlocked.Decrement(ref _quantityTask);
+				var status = task.Status;
+				task.Status = TaskStatus.Paused;
+				var result = new TaskLog
+				{
+					CreateTime = DateTime.UtcNow,
+					TaskId = task.Id,
+					Round = task.CurrentRound,
+					Success = true,
+					Remark = $"[PauseTask] 任务状态 `{status}` 已转为 `{task.Status}`"
+				};
+				_taskHandler.OnExecuted(this, task, result);
+			}
+			return _ib.TryRemove(id);
+		}
 	}
 }
