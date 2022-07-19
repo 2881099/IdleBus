@@ -1,18 +1,26 @@
 IdleScheduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时的延时任务和重复循环任务(可落地保存)，可按秒，每天固定时间，每周固定时间，每月固定时间执行。
 
-## API
+## API (循环定时任务，可持久化)
 
 | Method | 说明 |
 | -- | -- |
 | void Ctor(ITaskHandler) | 指定任务调度器（单例） |
-| string AddTask(string topic, string body, int times, int seconds) | 创建循环定时任务，返回 id |
+| string AddTask(string topic, string body, int round, int seconds) | 创建循环定时任务，返回 id |
+| string AddTask(string topic, string body, int round, int[] seconds) | 创建循环定时任务，可设置每一轮定时值，返回 id |
+| bool RemoveTask(string id) | 删除任务 |
+| bool ExistsTask(string id) | 判断任务是否存在 |
+| bool ResumeTask(string id) | 恢复已暂停的任务 |
+| bool PauseTask(string id) | 暂停正在运行的任务 |
+| TaskInfo[] FindTask(lambda) | 查询正在运行中的任务 |
+| int QuantityTask | 任务数量 |
+
+## API (临时任务)
+
+| Method | 说明 |
+| -- | -- |
 | string AddTempTask(TimeSpan, Action) | 创建临时的延时任务，返回 id |
-| bool RemoveTask(string id) | 删除任务(循环定时任务) |
 | bool RemoveTempTask(string id) | 删除任务(临时任务) |
-| bool ExistsTask(string id) | 判断任务是否存在(循环定时任务) |
 | bool ExistsTempTask(string id) | 判断任务是否存在(临时任务) |
-| TaskInfo[] FindTask(lambda) | 查询正在运行中的任务(循环定时任务) |
-| int QuantityTask | 任务数量(循环定时任务) |
 | int QuantityTempTask | 任务数量(临时任务) |
 
 ## Performance
@@ -35,6 +43,17 @@ IdleScheduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时
 ```csharp
 class Program
 {
+    // 持久化任务
+    class MyTaskHandler : IdleScheduler.TaskHandlers.FreeSqlHandler
+    {
+        public MyTaskHandler(IFreeSql fsql) : base(fsql) { }
+
+        public override void OnExecuting(Scheduler scheduler, TaskInfo task)
+        {
+            Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {task.Topic} 被执行，还剩 {scheduler.QuantityTask} 个循环任务");
+        }
+    }
+
     static void Main(string[] args)
     {
         var fsql = new FreeSql.FreeSqlBuilder()
@@ -44,7 +63,7 @@ class Program
             .UseMonitorCommand(cmd => Console.WriteLine($"=========sql: {cmd.CommandText}\r\n"))
             .Build();
 
-        Scheduler scheduler = new Scheduler(new IdleScheduler.TaskHandlers.FreeSqlHandler(fsql));
+        Scheduler scheduler = new Scheduler(new IdleScheduler.TaskHandlers.MyTaskHandler(fsql));
 
         var dt = DateTime.Now;
         for (var a = 0; a < 2; a++)
