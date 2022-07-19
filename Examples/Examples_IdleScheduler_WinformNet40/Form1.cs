@@ -54,8 +54,7 @@ namespace Examples_IdleScheduler_WinformNet40
             button2.Enabled = false;
 
             if (string.IsNullOrEmpty(taskId))
-                //taskId = _scheduler.AddTask($"test_task_{DateTime.Now.ToString("g")}", $"test_task01_body{DateTime.Now.ToString("g")}", new[] { 3, 3, 3, 3, 5, 5, 5, 5, 10, 10 });
-                taskId = _scheduler.AddTask($"test_task_{DateTime.Now.ToString("g")}", $"test_task01_body{DateTime.Now.ToString("g")}", "0,5,10,15,20,25,30,35,40,45,50,55 0/1 * * * ? *");
+                taskId = _scheduler.AddTask($"test_task_{DateTime.Now.ToString("g")}", $"test_task01_body{DateTime.Now.ToString("g")}", new[] { 3, 3, 3, 3, 5, 5, 5, 5, 10, 10 });
             else
                 MessageBox.Show(_scheduler.ResumeTask(taskId).ToString());
             button1.Enabled = true;

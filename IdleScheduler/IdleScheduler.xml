@@ -149,11 +149,6 @@
             每月第五天15点55分59秒
             </summary>
         </member>
-        <member name="F:IdleScheduler.TaskInterval.Cron">
-            <summary>
-            Cron 表达式
-            </summary>
-        </member>
         <member name="P:IdleScheduler.TaskLog.TaskId">
             <summary>
             任务编号
@@ -284,12 +279,6 @@
             添加循环执行的任务（每个月的什么时候执行）<para></para>
             每月1号 expression: "1:20:30:00"<para></para>
             每月28号 expression: "28:20:30:00"<para></para>
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.String)">
-            <summary>
-            添加 Cron 表达式任务
             </summary>
             <returns></returns>
         </member>
