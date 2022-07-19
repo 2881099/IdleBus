@@ -44,7 +44,7 @@ class Program
             .UseMonitorCommand(cmd => Console.WriteLine($"=========sql: {cmd.CommandText}\r\n"))
             .Build();
 
-        Scheduler scheduler = new Scheduler(new IdleSchduler.TaskHandlers.FreeSqlHandler(fsql));
+        Scheduler scheduler = new Scheduler(new IdleScheduler.TaskHandlers.FreeSqlHandler(fsql));
 
         var dt = DateTime.Now;
         for (var a = 0; a < 2; a++)
