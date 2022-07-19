@@ -7,6 +7,9 @@ IdleScheduler 是利用 IdleBus 实现的轻量定时任务调度，支持临时
 | void Ctor(ITaskHandler) | 指定任务调度器（单例） |
 | string AddTask(string topic, string body, int round, int seconds) | 创建循环定时任务，返回 id |
 | string AddTask(string topic, string body, int round, int[] seconds) | 创建循环定时任务，可设置每一轮定时值，返回 id |
+| string AddTaskRunOnDay(string topic, string body, int round, int hour, int minute, int second) | 创建每日循环任务，返回 id |
+| string AddTaskRunOnWeek(string topic, string body, int round, int week, int hour, int minute, int second) | 创建每周循环任务，返回 id |
+| string AddTaskRunOnMonth(string topic, string body, int round, int day, int hour, int minute, int second) | 创建每月循环任务，返回 id |
 | bool RemoveTask(string id) | 删除任务 |
 | bool ExistsTask(string id) | 判断任务是否存在 |
 | bool ResumeTask(string id) | 恢复已暂停的任务 |
