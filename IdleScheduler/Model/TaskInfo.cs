@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -28,7 +29,8 @@ namespace IdleScheduler
 		/// </summary>
 		public TaskInterval Interval { get; set; }
 		/// <summary>
-		/// 定时参数值
+		/// 定时参数值<para></para>
+		/// Interval SEC 可设置参数值 10,20,30 分别对每一轮进行设置定时秒数
 		/// </summary>
 		public string IntervalArgument { get; set; }
 		/// <summary>
@@ -53,8 +55,10 @@ namespace IdleScheduler
 		internal int IncrementCurrentRound() => Interlocked.Increment(ref _currentRound);
 		internal int IncrementErrorTimes() => Interlocked.Increment(ref _errorTimes);
 
-		public TimeSpan GetInterval()
+		public TimeSpan GetInterval(int curRound)
 		{
+			if (curRound < 0) curRound = 0;
+			if (curRound > Round) curRound = Round;
 			DateTime now = DateTime.UtcNow;
 			DateTime curt = DateTime.MinValue;
 			TimeSpan ts = TimeSpan.Zero;
@@ -63,7 +67,9 @@ namespace IdleScheduler
 			switch (Interval)
 			{
 				case TaskInterval.SEC:
-					double.TryParse(IntervalArgument, out interval);
+					var itvargs = IntervalArgument.Split(',').Select(a => a.Trim()).ToArray();
+					var itvarg = itvargs[Math.Min(curRound, itvargs.Length - 1)];
+					double.TryParse(itvarg, out interval);
 					interval *= 1000;
 					break;
 				case TaskInterval.RunOnDay:
