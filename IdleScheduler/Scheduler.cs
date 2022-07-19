@@ -128,36 +128,47 @@ namespace IdleScheduler
 		/// </summary>
 		/// <param name="topic">名称</param>
 		/// <param name="body">数据</param>
-		/// <param name="round">循环次数，-1为永久循环</param>
 		/// <param name="seconds">每一轮的定时秒数：10,20,30</param>
 		/// <returns></returns>
-		public string AddTask(string topic, string body, int round, int[] seconds) => AddTaskPriv(topic, body, round, TaskInterval.SEC, string.Join(",", seconds));
+		public string AddTask(string topic, string body, int[] seconds) => AddTaskPriv(topic, body, seconds.Length, TaskInterval.SEC, string.Join(",", seconds));
 		/// <summary>
-		/// 添加循环执行的任务（每天的什么时候执行）
+		/// 添加循环执行的任务（每天的什么时候执行）<para></para>
+		/// 每天 expression: "20:30:00"
 		/// </summary>
 		/// <returns></returns>
-		public string AddTaskRunOnDay(string topic, string body, int round, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnDay, $"{hour}:{minute}:{second}");
+		public string AddTaskRunOnDay(string topic, string body, int round, string expression) => AddTaskPriv(topic, body, round, TaskInterval.RunOnDay, expression);
 		/// <summary>
-		/// 添加循环执行的任务（每个星期的什么时候执行）
+		/// 添加循环执行的任务（每个星期的什么时候执行）<para></para>
+		/// 每周日 expression: "0:20:30:00"<para></para>
+		/// 每周六 expression: "6:20:30:00"
 		/// </summary>
 		/// <returns></returns>
-		public string AddTaskRunOnWeek(string topic, string body, int round, int week, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnWeek, $"{week}:{hour}:{minute}:{second}");
+		public string AddTaskRunOnWeek(string topic, string body, int round, string expression) => AddTaskPriv(topic, body, round, TaskInterval.RunOnWeek, expression);
 		/// <summary>
-		/// 添加循环执行的任务（每个月的什么时候执行）
+		/// 添加循环执行的任务（每个月的什么时候执行）<para></para>
+		/// 每月1号 expression: "1:20:30:00"<para></para>
+		/// 每月28号 expression: "28:20:30:00"<para></para>
 		/// </summary>
 		/// <returns></returns>
-		public string AddTaskRunOnMonth(string topic, string body, int round, int day, int hour, int minute, int second) => AddTaskPriv(topic, body, round, TaskInterval.RunOnMonth, $"{day}:{hour}:{minute}:{second}");
-		string AddTaskPriv(string topic, string body, int round, TaskInterval interval, string intervalArgument)
+		public string AddTaskRunOnMonth(string topic, string body, int round, string expression) => AddTaskPriv(topic, body, round, TaskInterval.RunOnMonth, expression);
+
+		///// <summary>
+		///// 添加 Cron 表达式任务
+		///// </summary>
+		///// <returns></returns>
+		//public string AddTask(string topic, string body, string expression) => AddTaskPriv(topic, body, -1, TaskInterval.Cron, expression);
+
+		string AddTaskPriv(string topic, string body, int round, TaskInterval interval, string argument)
 		{
 			var task = new TaskInfo
 			{
-				Id = $"{DateTime.UtcNow.ToString("yyyyMMdd")}.{Snowfake.Default.nextId().ToString()}",
+				Id = $"{DateTime.UtcNow.ToString("yyyyMMdd")}.{Snowfake.Default.nextId()}",
 				Topic = topic,
 				Body = body,
 				CreateTime = DateTime.UtcNow,
 				Round = round,
 				Interval = interval,
-				IntervalArgument = intervalArgument,
+				IntervalArgument = argument,
 				CurrentRound = 0,
 				ErrorTimes = 0,
 				LastRunTime = new DateTime(1970, 1, 1),
@@ -213,8 +224,11 @@ namespace IdleScheduler
 					}
 					if (task.Status != TaskStatus.Running) return;
 					if (round == -1 || currentRound < round)
-						if (_ib.TryRegister(task.Id, () => bus, task.GetInterval(currentRound)))
+					{
+						var nextTimeSpan = LocalGetNextTimeSpan(task.Status, currentRound);
+						if (nextTimeSpan != null && _ib.TryRegister(task.Id, () => bus, nextTimeSpan.Value))
 							_ib.Get(task.Id);
+					}
 				});
 			});
 			if (_tasks.TryAdd(task.Id, task))
@@ -232,8 +246,32 @@ namespace IdleScheduler
 					}
 				}
 				Interlocked.Increment(ref _quantityTask);
-				if (_ib.TryRegister(task.Id, () => bus, task.GetInterval(task.CurrentRound)))
+				var nextTimeSpan = LocalGetNextTimeSpan(task.Status, task.CurrentRound);
+				if (nextTimeSpan != null && _ib.TryRegister(task.Id, () => bus, nextTimeSpan.Value))
 					_ib.Get(task.Id);
+			}
+
+			TimeSpan? LocalGetNextTimeSpan(TaskStatus status, int curRound)
+            {
+				var nextTimeSpan = task.GetInterval(curRound);
+				if (nextTimeSpan == null)
+				{
+					if (_tasks.TryRemove(task.Id, out var old))
+						Interlocked.Decrement(ref _quantityTask);
+					task.Status = TaskStatus.Completed;
+					if (status != task.Status)
+					{
+						_taskHandler.OnExecuted(this, task, new TaskLog
+						{
+							CreateTime = DateTime.UtcNow,
+							TaskId = task.Id,
+							Round = task.CurrentRound,
+							Remark = $"[NextInterval] 任务状态 `{status}` 已转为 `{task.Status}`"
+						});
+					}
+					return null;
+				}
+				return nextTimeSpan;
 			}
 		}
 		/// <summary>
@@ -276,15 +314,13 @@ namespace IdleScheduler
 			if (task.Status != TaskStatus.Paused) return false;
 			var status = task.Status;
 			task.Status = TaskStatus.Running;
-			var result = new TaskLog
+			_taskHandler.OnExecuted(this, task, new TaskLog
 			{
 				CreateTime = DateTime.UtcNow,
 				TaskId = task.Id,
 				Round = task.CurrentRound,
-				Success = true,
 				Remark = $"[ResumeTask] 任务状态 `{status}` 已转为 `{task.Status}`"
-			};
-			_taskHandler.OnExecuted(this, task, result);
+			});
 			AddTaskPriv(task, false);
 			return true;
 		}
@@ -300,15 +336,16 @@ namespace IdleScheduler
 				Interlocked.Decrement(ref _quantityTask);
 				var status = task.Status;
 				task.Status = TaskStatus.Paused;
-				var result = new TaskLog
+				if (status != task.Status)
 				{
-					CreateTime = DateTime.UtcNow,
-					TaskId = task.Id,
-					Round = task.CurrentRound,
-					Success = true,
-					Remark = $"[PauseTask] 任务状态 `{status}` 已转为 `{task.Status}`"
-				};
-				_taskHandler.OnExecuted(this, task, result);
+					_taskHandler.OnExecuted(this, task, new TaskLog
+					{
+						CreateTime = DateTime.UtcNow,
+						TaskId = task.Id,
+						Round = task.CurrentRound,
+						Remark = $"[PauseTask] 任务状态 `{status}` 已转为 `{task.Status}`"
+					});
+				}
 			}
 			return _ib.TryRemove(id);
 		}

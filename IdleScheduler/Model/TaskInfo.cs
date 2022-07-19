@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cronos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -63,7 +64,7 @@ namespace IdleScheduler
 		internal int IncrementCurrentRound() => Interlocked.Increment(ref _currentRound);
 		internal int IncrementErrorTimes() => Interlocked.Increment(ref _errorTimes);
 
-		public TimeSpan GetInterval(int curRound)
+		public TimeSpan? GetInterval(int curRound)
 		{
 			if (curRound < 0) curRound = 0;
 			if (curRound > Round) curRound = Round;
@@ -133,6 +134,12 @@ namespace IdleScheduler
 							interval = ts.TotalMilliseconds;
 						}
 					break;
+				//case TaskInterval.Cron:
+				//	var expression = CronExpression.Parse(IntervalArgument);
+				//	var next = expression.GetNextOccurrence(DateTimeOffset.UtcNow, TimeZoneInfo.Utc);
+				//	if (next == null) return null;
+				//	interval = DateTimeOffset.UtcNow.Subtract(next.Value).TotalMilliseconds;
+				//	break;
 			}
 			if (interval == 0) interval = 1;
 			return TimeSpan.FromMilliseconds(interval);

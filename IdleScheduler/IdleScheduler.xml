@@ -149,6 +149,11 @@
             每月第五天15点55分59秒
             </summary>
         </member>
+        <member name="F:IdleScheduler.TaskInterval.Cron">
+            <summary>
+            Cron 表达式
+            </summary>
+        </member>
         <member name="P:IdleScheduler.TaskLog.TaskId">
             <summary>
             任务编号
@@ -246,7 +251,7 @@
             <param name="seconds">秒数</param>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.Int32,System.Int32[])">
+        <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.Int32[])">
             <summary>
             添加循环执行的任务（秒）<para></para>
             可设置参数值 10,20,30 分别对每一轮进行设置定时秒数，例如：<para></para>
@@ -256,25 +261,35 @@
             </summary>
             <param name="topic">名称</param>
             <param name="body">数据</param>
-            <param name="round">循环次数，-1为永久循环</param>
             <param name="seconds">每一轮的定时秒数：10,20,30</param>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnDay(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnDay(System.String,System.String,System.Int32,System.String)">
             <summary>
-            添加循环执行的任务（每天的什么时候执行）
+            添加循环执行的任务（每天的什么时候执行）<para></para>
+            每天 expression: "20:30:00"
             </summary>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnWeek(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnWeek(System.String,System.String,System.Int32,System.String)">
             <summary>
-            添加循环执行的任务（每个星期的什么时候执行）
+            添加循环执行的任务（每个星期的什么时候执行）<para></para>
+            每周日 expression: "0:20:30:00"<para></para>
+            每周六 expression: "6:20:30:00"
             </summary>
             <returns></returns>
         </member>
-        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnMonth(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:IdleScheduler.Scheduler.AddTaskRunOnMonth(System.String,System.String,System.Int32,System.String)">
             <summary>
-            添加循环执行的任务（每个月的什么时候执行）
+            添加循环执行的任务（每个月的什么时候执行）<para></para>
+            每月1号 expression: "1:20:30:00"<para></para>
+            每月28号 expression: "28:20:30:00"<para></para>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.AddTask(System.String,System.String,System.String)">
+            <summary>
+            添加 Cron 表达式任务
             </summary>
             <returns></returns>
         </member>

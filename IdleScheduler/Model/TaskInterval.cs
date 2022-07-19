@@ -28,6 +28,11 @@ namespace IdleScheduler
 		/// 如：5:15:55:59<para></para>
 		/// 每月第五天15点55分59秒
 		/// </summary>
-		RunOnMonth = 13
+		RunOnMonth = 13,
+
+		///// <summary>
+		///// Cron 表达式
+		///// </summary>
+		//Cron = 21
 	}
 }
