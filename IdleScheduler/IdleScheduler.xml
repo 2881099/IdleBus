@@ -149,6 +149,18 @@
             每月第五天15点55分59秒
             </summary>
         </member>
+        <member name="F:IdleScheduler.TaskInterval.Custom">
+            <summary>
+            自定义触发
+            </summary>
+        </member>
+        <member name="M:IdleScheduler.ITaskIntervalCustomHandler.NextDelay(IdleScheduler.TaskInfo)">
+            <summary>
+            获取下一次定时间隔，返回 null 时结束
+            </summary>
+            <param name="task">持久化任务对象</param>
+            <returns></returns>
+        </member>
         <member name="P:IdleScheduler.TaskLog.TaskId">
             <summary>
             任务编号
@@ -279,6 +291,12 @@
             添加循环执行的任务（每个月的什么时候执行）<para></para>
             每月1号 expression: "1:20:30:00"<para></para>
             每月28号 expression: "28:20:30:00"<para></para>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdleScheduler.Scheduler.AddTaskCustom(System.String,System.String,System.String)">
+            <summary>
+            添加 Custom 任务
             </summary>
             <returns></returns>
         </member>

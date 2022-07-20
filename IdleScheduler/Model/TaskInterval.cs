@@ -30,9 +30,19 @@ namespace IdleScheduler
 		/// </summary>
 		RunOnMonth = 13,
 
-		///// <summary>
-		///// Cron 表达式
-		///// </summary>
-		//Cron = 21
-	}
+        /// <summary>
+        /// 自定义触发，new Scheduler(.., new YourCustomHandler())
+        /// </summary>
+        Custom = 21
+    }
+
+	public interface ITaskIntervalCustomHandler
+    {
+		/// <summary>
+		/// 获取下一次定时间隔，返回 null 时结束
+		/// </summary>
+		/// <param name="task">持久化任务对象</param>
+		/// <returns></returns>
+		TimeSpan? NextDelay(TaskInfo task);
+    }
 }

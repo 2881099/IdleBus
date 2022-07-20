@@ -29,6 +29,13 @@ namespace Examples_IdleScheduler_WinformNet40
                     task.Status = TaskStatus.Completed;
             }
         }
+        class MyCustomTaskHandler : IdleScheduler.ITaskIntervalCustomHandler
+        {
+            public TimeSpan? NextDelay(TaskInfo task)
+            {
+                return TimeSpan.FromSeconds(5);
+            }
+        }
         static IdleScheduler.Scheduler _scheduler;
         static IFreeSql _fsql;
         static Form1()
@@ -40,7 +47,7 @@ namespace Examples_IdleScheduler_WinformNet40
                 .UseNoneCommandParameter(true)
                 .UseMonitorCommand(cmd => Console.WriteLine($"=========sql: {cmd.CommandText}\r\n"))
                 .Build();
-            _scheduler = new Scheduler(new MyTaskHandler(_fsql));
+            _scheduler = new Scheduler(new MyTaskHandler(_fsql), new MyCustomTaskHandler());
         }
 
         string taskId = "";
@@ -65,6 +72,25 @@ namespace Examples_IdleScheduler_WinformNet40
             button1.Enabled = false;
             MessageBox.Show(_scheduler.PauseTask(taskId).ToString());
             button2.Enabled = true;
+        }
+
+        string customTaskId = "";
+        private void button3_Click(object sender, EventArgs e)
+        {
+            button3.Enabled = false;
+
+            if (string.IsNullOrEmpty(customTaskId))
+                customTaskId = _scheduler.AddTaskCustom($"test_customtask_{DateTime.Now.ToString("g")}", $"test_customtask01_body{DateTime.Now.ToString("g")}", "cron exp");
+            else
+                MessageBox.Show(_scheduler.ResumeTask(customTaskId).ToString());
+            button4.Enabled = true;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            button4.Enabled = false;
+            MessageBox.Show(_scheduler.PauseTask(customTaskId).ToString());
+            button3.Enabled = true;
         }
     }
 }

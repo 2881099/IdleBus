@@ -133,13 +133,9 @@ namespace IdleScheduler
 							interval = ts.TotalMilliseconds;
 						}
 					break;
-				//case TaskInterval.Cron:
-				//	var expression = CronExpression.Parse(IntervalArgument);
-				//	var next = expression.GetNextOccurrence(DateTimeOffset.UtcNow, TimeZoneInfo.Utc);
-				//	if (next == null) return null;
-				//	interval = DateTimeOffset.UtcNow.Subtract(next.Value).TotalMilliseconds;
-				//	break;
-			}
+                case TaskInterval.Custom:
+					throw new Exception("请使用 Scheduler 对象获取自定义间隔值");
+            }
 			if (interval == 0) interval = 1;
 			return TimeSpan.FromMilliseconds(interval);
 		}

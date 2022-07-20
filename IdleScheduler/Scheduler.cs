@@ -26,6 +26,7 @@ namespace IdleScheduler
 
 		WorkQueue _wq;
 		ITaskHandler _taskHandler;
+		ITaskIntervalCustomHandler _taskIntervalCustomHandler;
 		ConcurrentDictionary<string, TaskInfo> _tasks = new ConcurrentDictionary<string, TaskInfo>();
 
 		#region Dispose
@@ -49,10 +50,12 @@ namespace IdleScheduler
 		}
 		#endregion
 
-		public Scheduler(ITaskHandler taskHandler)
+		public Scheduler(ITaskHandler taskHandler) : this(taskHandler, null) { }
+		public Scheduler(ITaskHandler taskHandler, ITaskIntervalCustomHandler taskIntervalCustomHandler)
 		{
-			if (taskHandler == null) throw new ArgumentNullException("taskHandler 参数不能为  null");
+			if (taskHandler == null) throw new ArgumentNullException("taskHandler 参数不能为 null");
 			_taskHandler = taskHandler;
+			_taskIntervalCustomHandler = taskIntervalCustomHandler;
 
 			_ib = new IdleBus();
 			_ib.ScanOptions.Interval = TimeSpan.FromMilliseconds(200);
@@ -152,13 +155,13 @@ namespace IdleScheduler
 		/// <returns></returns>
 		public string AddTaskRunOnMonth(string topic, string body, int round, string expression) => AddTaskPriv(topic, body, round, TaskInterval.RunOnMonth, expression);
 
-		///// <summary>
-		///// 添加 Cron 表达式任务
-		///// </summary>
-		///// <returns></returns>
-		//public string AddTask(string topic, string body, string expression) => AddTaskPriv(topic, body, -1, TaskInterval.Cron, expression);
+		/// <summary>
+		/// 添加 Custom 任务，new Scheduler(.., new YourCustomHandler())
+		/// </summary>
+		/// <returns></returns>
+		public string AddTaskCustom(string topic, string body, string expression) => AddTaskPriv(topic, body, -1, TaskInterval.Custom, expression);
 
-		string AddTaskPriv(string topic, string body, int round, TaskInterval interval, string argument)
+        string AddTaskPriv(string topic, string body, int round, TaskInterval interval, string argument)
 		{
 			var task = new TaskInfo
 			{
@@ -253,7 +256,15 @@ namespace IdleScheduler
 
 			TimeSpan? LocalGetNextTimeSpan(TaskStatus status, int curRound)
             {
-				var nextTimeSpan = task.GetInterval(curRound);
+				TimeSpan? nextTimeSpan = null;
+				if (task.Interval == TaskInterval.Custom)
+                {
+					if (_taskIntervalCustomHandler == null) throw new ArgumentNullException("Scheduler ctor(ITaskHandler, ITaskIntervalCustomHandler) 参数2 不能为 null");
+					nextTimeSpan = _taskIntervalCustomHandler.NextDelay(task);
+				}
+				else
+					nextTimeSpan = task.GetInterval(curRound);
+
 				if (nextTimeSpan == null)
 				{
 					if (_tasks.TryRemove(task.Id, out var old))
