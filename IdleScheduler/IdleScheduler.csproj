@@ -6,8 +6,8 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>YeXiangQin</Authors>
 		<Description>IdleScheduler 轻量定时任务调度，支持临时的延时任务和重复循环任务，可按秒，每天固定时间，每周固定时间，每月固定时间执行。</Description>
-		<PackageProjectUrl>https://github.com/2881099/IdleBus/tree/master/IdleScheduler</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/2881099/IdleBus/tree/master/IdleScheduler</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/2881099/FreeScheduler</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/2881099/FreeScheduler</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>IdleScheduler;Scheduler;Timer;TempTask</PackageTags>
@@ -16,12 +16,6 @@
 		<IsPackable>true</IsPackable>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<SignAssembly>true</SignAssembly>
-		<AssemblyOriginatorKeyFile>yxq.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-		<DocumentationFile>IdleScheduler.xml</DocumentationFile>
-		<WarningLevel>3</WarningLevel>
 	</PropertyGroup>
 
 	<ItemGroup>
