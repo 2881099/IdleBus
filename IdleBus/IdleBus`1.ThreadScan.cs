@@ -59,7 +59,7 @@ partial class IdleBus<TKey, TValue>
     void ThreadScanWatchHandler()
     {
         var couter = 0;
-        while (isdisposed == false)
+        while (IsDisposed == false)
         {
             if (ThreadJoin(ScanOptions.Interval) == false) return;
             this.InternalRemoveDelayHandler();
@@ -76,7 +76,7 @@ partial class IdleBus<TKey, TValue>
             long keysIndex = 0;
             foreach (var key in keys)
             {
-                if (isdisposed) return;
+                if (IsDisposed) return;
                 ++keysIndex;
                 if (ScanOptions.BatchQuantity > 0 && keysIndex % ScanOptions.BatchQuantity == 0)
                 {
@@ -111,12 +111,12 @@ partial class IdleBus<TKey, TValue>
         for (var a = 0; a < seconds; a++)
         {
             Thread.CurrentThread.Join(TimeSpan.FromSeconds(1));
-            if (isdisposed) return false;
+            if (IsDisposed) return false;
         }
         for (var a = 0; a < milliseconds; a += 200)
         {
             Thread.CurrentThread.Join(TimeSpan.FromMilliseconds(200));
-            if (isdisposed) return false;
+            if (IsDisposed) return false;
         }
         return true;
     }

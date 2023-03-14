@@ -43,7 +43,7 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
     /// <returns></returns>
     public TValue Get(TKey key)
     {
-        if (isdisposed) throw new Exception($"{key} 实例获取失败，{nameof(IdleBus<TValue>)} 对象已释放");
+        if (IsDisposed) throw new Exception($"{key} 实例获取失败，{nameof(IdleBus<TValue>)} 对象已释放");
         if (_dic.TryGetValue(key, out var item) == false)
         {
             var error = new Exception($"{key} 实例获取失败，因为没有注册");
@@ -128,7 +128,11 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
 
     bool InternalRegister(TKey key, Func<TValue> create, TimeSpan? idle, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 注册失败，{nameof(IdleBus<TValue>)} 对象已释放");
+        if (IsDisposed)
+        {
+            if (isThrow) throw new Exception($"{key} 注册失败，{nameof(IdleBus<TValue>)} 对象已释放");
+            return false;
+        }
         var error = new Exception($"{key} 注册失败，请勿重复注册");
         if (_dic.ContainsKey(key))
         {
@@ -163,7 +167,11 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
     }
     bool InternalRemove(TKey key, bool isNow, bool isThrow)
     {
-        if (isdisposed) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<TValue>)} 对象已释放");
+        if (IsDisposed)
+        {
+            if (isThrow) throw new Exception($"{key} 删除失败 ，{nameof(IdleBus<TValue>)} 对象已释放");
+            return false;
+        }
         if (_dic.TryRemove(key, out var item) == false)
         {
             var error = new Exception($"{key} 删除失败 ，因为没有注册");
@@ -217,15 +225,15 @@ public partial class IdleBus<TKey, TValue> : IDisposable where TValue : class, I
 
     #region Dispose
     ~IdleBus() => Dispose();
-    bool isdisposed = false;
+    public bool IsDisposed { get; private set; }
     object isdisposedLock = new object();
     public void Dispose()
     {
-        if (isdisposed) return;
+        if (IsDisposed) return;
         lock (isdisposedLock)
         {
-            if (isdisposed) return;
-            isdisposed = true;
+            if (IsDisposed) return;
+            IsDisposed = true;
         }
         foreach (var item in _removePending.Values) item.Dispose();
         foreach (var item in _dic.Values) item.Dispose();
